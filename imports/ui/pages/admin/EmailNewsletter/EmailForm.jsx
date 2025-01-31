@@ -12,9 +12,9 @@ import {
 } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 
-import FormField from '../../../components/FormField';
-import ReactQuill from '../../../components/Quill';
-import FileDropper from '../../../components/FileDropper';
+import FormField from '../../../forms/FormField';
+import ReactQuill from '../../../forms/Quill';
+import FileDropper from '../../../forms/FileDropper';
 import ContentInserter from './ContentInserter';
 
 export default function EmailForm({

@@ -18,17 +18,17 @@ import {
 } from '@chakra-ui/react';
 
 import ProfileForm from './ProfileForm';
-import ConfirmModal from '../../components/ConfirmModal';
-import { message } from '../../components/message';
+import ConfirmModal from '../../generic/ConfirmModal';
+import { message } from '../../generic/message';
 import { call, resizeImage, uploadImage } from '../../utils/shared';
-import FormSwitch from '../../components/FormSwitch';
+import FormSwitch from '../../forms/FormSwitch';
 import { StateContext } from '../../LayoutContainer';
 import AvatarUploader from './AvatarUploader';
-import Tabs from '../../components/Tabs';
-import ChangeLanguage from '../../components/ChangeLanguageMenu';
-import Template from '../../components/Template';
+import Tabs from '../../entry/Tabs';
+import ChangeLanguage from '../../layout/ChangeLanguageMenu';
+import Template from '../../layout/Template';
 import KeywordsManager from './KeywordsManager';
-import BackLink from '../../components/BackLink';
+import BackLink from '../../entry/BackLink';
 
 function EditProfile() {
   const [isDeleteModalOn, setIsDeleteModalOn] = useState(false);

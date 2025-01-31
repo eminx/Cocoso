@@ -1,135 +1,45 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { Box, Text } from '@chakra-ui/react';
-import parseHtml from 'html-react-parser';
-import { Helmet } from 'react-helmet';
 
 import { StateContext } from '../../LayoutContainer';
-import Loader from '../../components/Loader';
-import { message } from '../../components/message';
+import Loader from '../../generic/Loader';
 import { call } from '../../utils/shared';
-import TablyCentered from '../../components/TablyCentered';
-import DocumentsField from '../resources/components/DocumentsField';
+import WorkHybrid from '../../entry/WorkHybrid';
 
-function Work() {
-  const [work, setWork] = useState(null);
-  const [documents, setDocuments] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const { currentHost, currentUser } = useContext(StateContext);
+export default function Work() {
+  const initialWork = window?.__PRELOADED_STATE__?.work || null;
+  const initialDocuments = window?.__PRELOADED_STATE__?.documents || [];
+  const Host = window?.__PRELOADED_STATE__?.Host || null;
+
+  const [work, setWork] = useState(initialWork);
+  const [documents, setDocuments] = useState(initialDocuments);
+
+  let { currentHost } = useContext(StateContext);
   const { usernameSlug, workId } = useParams();
-  const [empty, username] = usernameSlug.split('@');
-  const [tc] = useTranslation('common');
+  const [, username] = usernameSlug.split('@');
 
-  useEffect(() => {
-    getWork();
-  }, []);
+  if (!currentHost) {
+    currentHost = Host;
+  }
 
-  const getWork = async () => {
+  const getData = async () => {
     try {
       const response = await call('getWork', workId, username);
       setWork(response);
       const docs = await call('getDocumentsByAttachments', response._id);
       setDocuments(docs);
-      setLoading(false);
     } catch (error) {
-      message.error(error.reason);
-      setLoading(false);
+      // message.error(error.reason);
     }
   };
 
-  const isOwner = currentUser && currentUser.username === username;
+  useEffect(() => {
+    getData();
+  }, []);
 
-  const tabs = [
-    {
-      title: tc('labels.info'),
-      content: (
-        <Box bg="white" className="text-content" p="6">
-          {work?.longDescription && parseHtml(work.longDescription)}
-        </Box>
-      ),
-      path: 'info',
-    },
-  ];
-
-  if (work?.additionalInfo?.length > 2) {
-    tabs.push({
-      title: tc('labels.extra'),
-      content: (
-        <Box p="4">
-          <Text fontSize="lg">{work?.additionalInfo}</Text>
-        </Box>
-      ),
-      path: 'extra',
-    });
+  if (!work) {
+    return <Loader />;
   }
 
-  if (documents && documents[0]) {
-    tabs.push({
-      title: tc('documents.label'),
-      content: (
-        <Box p="4">
-          <DocumentsField contextType="works" contextId={work?._id} />
-        </Box>
-      ),
-      path: 'documents',
-    });
-  }
-
-  if (work?.contactInfo) {
-    tabs.push({
-      title: tc('labels.contact'),
-      content: (
-        <Box className="text-content" p="4" textAlign="center">
-          {work?.contactInfo && parseHtml(work.contactInfo)}
-        </Box>
-      ),
-      path: 'contact',
-    });
-  }
-
-  const adminMenu = {
-    label: 'Admin',
-    items: [
-      {
-        label: tc('actions.update'),
-        link: 'edit',
-      },
-    ],
-  };
-
-  const tags = work && [work.category?.label];
-
-  const worksInMenu = currentHost?.settings?.menu?.find((item) => item.name === 'works');
-  const backLink = {
-    value: '/works',
-    label: worksInMenu?.label,
-  };
-
-  return (
-    <>
-      <Helmet>
-        <title>{work?.title}</title>
-      </Helmet>
-      <TablyCentered
-        adminMenu={isOwner ? adminMenu : null}
-        author={
-          work &&
-          work.showAvatar && {
-            src: work.authorAvatar,
-            username: work.authorUsername,
-            link: `/@${work.authorUsername}`,
-          }
-        }
-        backLink={backLink}
-        images={work?.images}
-        subTitle={work?.shortDescription}
-        tabs={tabs}
-        tags={tags}
-        title={work?.title}
-      />
-    </>
-  );
+  return <WorkHybrid documents={documents} work={work} Host={currentHost} />;
 }
-
-export default Work;

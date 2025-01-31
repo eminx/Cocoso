@@ -8,6 +8,7 @@ import Groups from './group';
 import Activities from '../activities/activity';
 import Platform from '../platform/platform';
 import { getGroupRegistrationEmailBody, getInviteToPrivateGroupEmailBody } from './group.mails';
+import { parseGroupsWithMeetings } from '../../ui/utils/shared';
 
 const publicSettings = Meteor.settings.public;
 
@@ -30,12 +31,50 @@ Meteor.methods({
     return group;
   },
 
+  async getGroupWithMeetings(groupId) {
+    check(groupId, String);
+
+    const group = await Groups.findOneAsync({
+      _id: groupId,
+    });
+    const groupActivities = await Meteor.callAsync('getGroupMeetingsFuture', groupId);
+
+    return {
+      ...group,
+      meetings: groupActivities.map((a) => ({
+        ...a.datesAndTimes[0],
+        meetingId: a._id,
+      })),
+    };
+  },
+
+  async getGroupsWithMeetings(isPortalHost = false, host) {
+    if (!host) {
+      host = getHost(this);
+    }
+    try {
+      const retrievedGroups = await Meteor.callAsync('getGroups', isPortalHost, host);
+      const allGroupActivities = await Meteor.callAsync(
+        'getAllGroupMeetingsFuture',
+        isPortalHost,
+        host
+      );
+      const parsedGroups = parseGroupsWithMeetings(retrievedGroups, allGroupActivities);
+      return parsedGroups;
+    } catch (error) {
+      console.log(error);
+      throw new Meteor.Error(error);
+    }
+  },
+
   getGroups(isPortalHost = false, host) {
     const user = Meteor.user();
     if (!host) {
       host = getHost(this);
     }
-    const allGroups = isPortalHost ? Groups.find().fetch() : Groups.find({ host }).fetch();
+    const allGroups = isPortalHost
+      ? Groups.find({}, { sort: { creationDate: -1 } }).fetch()
+      : Groups.find({ host }).fetch();
     const groupsFiltered = allGroups.filter((group) => {
       if (!group.isPrivate) {
         return true;
@@ -68,11 +107,38 @@ Meteor.methods({
     }));
   },
 
-  getGroupMeetings(groupId) {
+  getAllGroupMeetingsFuture(isPortalHost = false, host) {
+    if (!host) {
+      host = getHost(this);
+    }
+
+    const dateNow = new Date().toISOString();
+
+    try {
+      if (isPortalHost) {
+        return Activities.find({
+          isGroupMeeting: true,
+          'datesAndTimes.startDate': { $gte: dateNow },
+        }).fetch();
+      }
+      return Activities.find({
+        host,
+        isGroupMeeting: true,
+      }).fetch();
+    } catch (error) {
+      throw new Meteor.Error(error, "Couldn't fetch data");
+    }
+  },
+
+  getGroupMeetingsFuture(groupId) {
     check(groupId, String);
+
+    const dateNow = new Date().toISOString().substring(0, 10);
     return Activities.find({
-      isGroupMeeting: true,
       groupId,
+      isGroupMeeting: true,
+      'datesAndTimes.startDate': { $gte: dateNow },
+      datesAndTimes: { $exists: true, $ne: [] },
     }).fetch();
   },
 
@@ -200,13 +266,13 @@ Meteor.methods({
 
       Activities.update(
         {
-          groupId: groupId,
+          groupId,
         },
         {
           $set: {
             title: formValues.title,
             longDescription: formValues.description,
-            imageUrl,
+            images: [imageUrl],
           },
         }
       );
@@ -269,6 +335,7 @@ Meteor.methods({
           },
         },
       });
+
       Meteor.users.update(user._id, {
         $addToSet: {
           groups: {
@@ -278,6 +345,9 @@ Meteor.methods({
           },
         },
       });
+
+      console.log(theGroup);
+
       Meteor.call('sendEmail', user._id, `"${theGroup.title}", ${currentHostName}`, emailBody);
     } catch (error) {
       console.log(error);

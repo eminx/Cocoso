@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet';
 
 import Works from '../../../api/works/work';
 import Hosts from '../../../api/hosts/host';
-import Content from '../../../ssr/components/EntrySSR';
+import Content from '../../entry/EntrySSR';
 
 function Work() {
   const { workId } = useParams();

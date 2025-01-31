@@ -6,6 +6,8 @@ labels:
   invite: Hantera medlemmar
   attendees: Deltagare
   meetings: Möten
+  meeting_dates: Se alla mötesdatum
+  next_meeting: Nästa möte
 
 tabs:
   active: Aktiva
@@ -56,6 +58,7 @@ actions:
   leave: Lämna
   archive: Arkivera
   unarchive: Avarkivera
+  register: Datum & OSA
 
 meeting:
   attends:
@@ -136,3 +139,9 @@ modal:
 private:
   title: privat
   info: Privata grouper är endast synliga för deras medlemmar, och deltagande är endast möjligt via inbjudningar från deras administratörer.
+
+admin:
+  admin: Admin
+  add_document: Lägg till dokument
+  add_meeting: Lägg till möte
+  manage_members: Hantera medlemmar

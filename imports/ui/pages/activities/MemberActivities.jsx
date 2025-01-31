@@ -1,43 +1,36 @@
+import { Meteor } from 'meteor/meteor';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Box } from '@chakra-ui/react';
 
-import Loader from '../../components/Loader';
-import { message } from '../../components/message';
-import Paginate from '../../components/Paginate';
-import NewGridThumb from '../../components/NewGridThumb';
-import NewEntryHelper from '../../components/NewEntryHelper';
+import { message } from '../../generic/message';
+import Paginate from '../../listing/Paginate';
+import NewGridThumb from '../../listing/NewGridThumb';
 
-function MemberActivities({ currentHost, isFederationLayout = false, isSelfAccount, user }) {
+function MemberActivities({ currentHost, user }) {
   const [activities, setActivities] = useState([]);
-  const [loading, setLoading] = useState(true);
 
-  const { username } = user;
+  const username = user?.username;
 
   useEffect(() => {
+    if (!user || !username) {
+      return;
+    }
     Meteor.call('getActivitiesByUser', username, (error, respond) => {
       if (error) {
         message(error);
-        setLoading(false);
         return;
       }
       setActivities(respond);
-      setLoading(false);
     });
   }, []);
 
-  if (loading) {
-    return <Loader />;
+  if (!user || !username || !activities || activities.length === 0) {
+    return null;
   }
 
   const publicActivities = activities.filter((item) => item.isPublicActivity);
-
-  if (!publicActivities || publicActivities.length === 0) {
-    if (isSelfAccount) {
-      return <NewEntryHelper buttonLink="/activities/new" isEmptyListing />;
-    }
-    return null;
-  }
+  const isPortalHost = currentHost?.isPortalHost;
 
   return (
     <Paginate items={publicActivities}>
@@ -48,7 +41,7 @@ function MemberActivities({ currentHost, isFederationLayout = false, isSelfAccou
             {isExternal ? (
               <a href={`https://${activity.host}/activities/${activity._id}/info`}>
                 <NewGridThumb
-                  host={isFederationLayout && activity.host}
+                  host={isPortalHost && activity.host}
                   imageUrl={activity.imageUrl}
                   title={activity.title}
                   subTitle={activity.isGroup ? activity.readingMaterial : activity.subTitle}
@@ -57,7 +50,7 @@ function MemberActivities({ currentHost, isFederationLayout = false, isSelfAccou
             ) : (
               <Link to={`/activities/${activity._id}/info`}>
                 <NewGridThumb
-                  host={isFederationLayout && activity.host}
+                  host={isPortalHost && activity.host}
                   imageUrl={activity.imageUrl}
                   title={activity.title}
                   subTitle={activity.isGroup ? activity.readingMaterial : activity.subTitle}

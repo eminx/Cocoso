@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { StateContext } from '../../LayoutContainer';
 import { ForgotPassword } from './index';
 import { call } from '../../utils/shared';
-import { message } from '../../components/message';
+import { message } from '../../generic/message';
 
 function ForgotPasswordPage() {
   const [t] = useTranslation('accounts');
@@ -28,7 +28,7 @@ function ForgotPasswordPage() {
   }
 
   return (
-    <Box pb="8" minHeight="100vh">
+    <Box pb="8">
       <Center p="4">
         <Box w="xs">
           <Heading size="md" textAlign="center">
@@ -40,7 +40,7 @@ function ForgotPasswordPage() {
             </Text>
           </Center>
 
-          <Box bg="brand.50" p="6">
+          <Box bg="brand.50" borderColor="brand.100" borderWidth={1} p="6">
             {emailSent ? (
               <Text>{t('password.message.linkSend')}</Text>
             ) : (

@@ -1,41 +1,32 @@
+import { Meteor } from 'meteor/meteor';
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Box } from '@chakra-ui/react';
 
-import Loader from '../../components/Loader';
-import { message } from '../../components/message';
-import NewGridThumb from '../../components/NewGridThumb';
-import Paginate from '../../components/Paginate';
-import NewEntryHelper from '../../components/NewEntryHelper';
+import { message } from '../../generic/message';
+import Paginate from '../../listing/Paginate';
+import NewGridThumb from '../../listing/NewGridThumb';
 
-function MemberWorks({ currentHost, isFederationLayout = false, isSelfAccount, user }) {
+function MemberWorks({ currentHost, user }) {
   const [works, setWorks] = useState([]);
-  const [loading, setLoading] = useState(true);
 
-  const { username } = user;
+  const username = user?.username;
 
   useEffect(() => {
     Meteor.call('getWorksByUser', username, (error, respond) => {
       if (error) {
         message(error);
-        setLoading(false);
         return;
       }
       setWorks(respond);
-      setLoading(false);
     });
   }, []);
 
-  if (loading) {
-    return <Loader />;
-  }
-
-  if (!works || works.length === 0) {
-    if (isSelfAccount) {
-      return <NewEntryHelper buttonLink="/works/new" isEmptyListing />;
-    }
+  if (!user || !username || !works || works.length === 0) {
     return null;
   }
+
+  const isPortalHost = currentHost?.isPortalHost;
 
   return (
     <Paginate items={works}>
@@ -50,7 +41,7 @@ function MemberWorks({ currentHost, isFederationLayout = false, isSelfAccount, u
                     name: work.authorUsername,
                     url: work.authorAvatar,
                   }}
-                  host={isFederationLayout && work.host}
+                  host={isPortalHost && work.host}
                   imageUrl={work.images[0]}
                   tag={work.category?.label}
                   title={work.title}
@@ -63,7 +54,7 @@ function MemberWorks({ currentHost, isFederationLayout = false, isSelfAccount, u
                     name: work.authorUsername,
                     url: work.authorAvatar,
                   }}
-                  host={isFederationLayout && work.host}
+                  host={isPortalHost && work.host}
                   imageUrl={work.images[0]}
                   tag={work.category?.label}
                   title={work.title}

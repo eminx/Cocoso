@@ -1,10 +1,13 @@
-const Joi = require('joi');
+import { z } from 'zod';
 
 const passwordErrorMessage =
   'Please make sure to enter minimum one lowercase letter, one capitalcase letter, one number and a total of minimum 8 characters';
+const usernameErrorMessage =
+  'Username must be composed of lowercase letters, numbers of a combination of both';
 
 // REGEX
-const regexPassword = '^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$';
+const regexUsername = new RegExp(/^[a-z0-9]+$/i);
+const regexPassword = new RegExp(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$/);
 
 // DEFAULT VALUES
 const loginModel = {
@@ -27,20 +30,37 @@ const resetPasswordModel = {
 };
 
 // SCHEMAS
+
+// const alphaNumericSchema = z.custom((val) => {
+//   return typeof val === 'string' ? /^[a-z0-9]+$/i.test(val) : false;
+// });
+
 const usernameSchema = {
-  username: Joi.string().alphanum().case('lower').min(4).max(15).required(),
+  username: z
+    .string({
+      required_error: usernameErrorMessage,
+      invalid_type_error: usernameErrorMessage,
+    })
+    .regex(regexUsername),
+  // .refine((value) => regexUsername.test(value)),
 };
 
 const emailSchema = {
-  email: Joi.string().email({ tlds: { allow: false } }),
+  email: z.string().email('This is not a valid email'),
 };
 
 const usernameOrEmailSchema = {
-  username: Joi.allow(usernameSchema, emailSchema),
+  username: z.union([usernameSchema.username, emailSchema.email]),
 };
 
 const passwordSchema = {
-  password: Joi.string().pattern(new RegExp(regexPassword)).message(passwordErrorMessage),
+  password: z
+    .string({
+      required_error: passwordErrorMessage,
+      invalid_type_error: passwordErrorMessage,
+    })
+    .regex(regexPassword),
+  // .refine((value) => regexPassword.test(value)),
 };
 
 export {

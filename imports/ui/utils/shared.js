@@ -1,7 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import Resizer from 'react-image-file-resizer';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { Slingshot } from 'meteor/edgee:slingshot';
+import isBetween from 'dayjs/plugin/isBetween';
+
+dayjs.extend(isBetween);
+
+const yesterday = dayjs(new Date()).add(-1, 'days');
+const today = dayjs();
 
 function localeSort(a, b) {
   return a.label.localeCompare(b.label);
@@ -29,8 +35,8 @@ function compareForSort(a, b) {
 }
 
 const compareDatesWithStartDateForSort = (a, b) => {
-  const dateA = moment(a.startDate, 'YYYY-MM-DD');
-  const dateB = moment(b.startDate, 'YYYY-MM-DD');
+  const dateA = dayjs(a.startDate, 'YYYY-MM-DD');
+  const dateB = dayjs(b.startDate, 'YYYY-MM-DD');
   return dateA.diff(dateB);
 };
 
@@ -176,15 +182,16 @@ function helper_parseAllBookingsWithResources(activity, recurrence) {
     return;
   }
   const { startDate, startTime, endDate, endTime, isMultipleDay } = recurrence;
+
   return {
     activityId: activity._id,
     title: activity.title,
-    start: moment(startDate + startTime, 'YYYY-MM-DD HH:mm').toDate(),
-    end: moment(endDate + endTime, 'YYYY-MM-DD HH:mm').toDate(),
-    startDate: startDate,
-    startTime: startTime,
-    endDate: endDate,
-    endTime: endTime,
+    start: dayjs(startDate + startTime, 'YYYY-MM-DD HH:mm').toDate(),
+    end: dayjs(endDate + endTime, 'YYYY-MM-DD HH:mm').toDate(),
+    startDate,
+    startTime,
+    endDate,
+    endTime,
     authorName: activity.authorName,
     longDescription: activity.longDescription,
     isMultipleDay: isMultipleDay || startDate !== endDate,
@@ -215,16 +222,16 @@ function getAllBookingsWithSelectedResource(selectedResource, allBookings) {
 function isDatesInConflict(existingStart, existingEnd, selectedStart, selectedEnd) {
   const dateTimeFormat = 'YYYY-MM-DD HH:mm';
 
-  // If the same values are selected, moment compare returns false. That's why we do:
+  // If the same values are selected, dayjs compare returns false. That's why we do:
   if (existingStart === selectedStart && existingEnd === selectedEnd) {
     return true;
   }
 
   return (
-    moment(selectedStart, dateTimeFormat).isBetween(existingStart, existingEnd) ||
-    moment(selectedEnd, dateTimeFormat).isBetween(existingStart, existingEnd) ||
-    moment(existingStart, dateTimeFormat).isBetween(selectedStart, selectedEnd) ||
-    moment(existingEnd, dateTimeFormat).isBetween(selectedStart, selectedEnd)
+    dayjs(selectedStart, dateTimeFormat).isBetween(existingStart, existingEnd) ||
+    dayjs(selectedEnd, dateTimeFormat).isBetween(existingStart, existingEnd) ||
+    dayjs(existingStart, dateTimeFormat).isBetween(selectedStart, selectedEnd) ||
+    dayjs(existingEnd, dateTimeFormat).isBetween(selectedStart, selectedEnd)
   );
 }
 
@@ -330,9 +337,6 @@ function parseHtmlEntities(input) {
   return input.replace(/\\+u([0-9a-fA-F]{4})/g, (a, b) => String.fromCharCode(parseInt(b, 16)));
 }
 
-const yesterday = moment(new Date()).add(-1, 'days');
-const today = moment();
-
 function compareDatesForSortActivities(a, b) {
   const firstOccurenceA = a?.datesAndTimes?.find(getFirstFutureOccurence);
   const firstOccurenceB = b?.datesAndTimes?.find(getFirstFutureOccurence);
@@ -349,17 +353,104 @@ function compareDatesForSortActivitiesReverse(a, b) {
   return dateB - dateA;
 }
 
+function compareMeetingDatesForSort(a, b) {
+  const dateA = new Date(a.startDate);
+  const dateB = new Date(b.startDate);
+  return dateA - dateB;
+}
+
+function parseGroupActivities(activities) {
+  const activitiesParsed = [];
+
+  activities?.forEach((act) => {
+    if (!act.isGroupMeeting) {
+      activitiesParsed.push(act);
+    } else {
+      const indexParsed = activitiesParsed.findIndex((actP) => {
+        return actP.groupId === act.groupId;
+      });
+      if (indexParsed === -1) {
+        activitiesParsed.push(act);
+      } else {
+        activitiesParsed[indexParsed].datesAndTimes.push(act.datesAndTimes[0]);
+      }
+    }
+  });
+
+  return activitiesParsed.map((act) => ({
+    ...act,
+    datesAndTimes: act.datesAndTimes.sort((a, b) => dayjs(a?.startDate) - dayjs(b?.startDate)),
+  }));
+}
+
+function parseGroupsWithMeetings(groups, meetings) {
+  const allGroups = groups.map((group) => {
+    const groupId = group._id;
+    const allGroupActivities = meetings.filter((meeting) => meeting.groupId === groupId);
+    const groupActivitiesFuture = allGroupActivities
+      .map((a) => a.datesAndTimes[0])
+      .sort(compareMeetingDatesForSort);
+    return {
+      ...group,
+      datesAndTimes: groupActivitiesFuture,
+    };
+  });
+
+  const groupsWithFutureMeetings = [];
+  const groupsWithoutFutureMeetings = [];
+  allGroups.forEach((group) => {
+    const groupMeetings = group.datesAndTimes;
+    if (groupMeetings && groupMeetings.length > 0) {
+      groupsWithFutureMeetings.push(group);
+    } else {
+      groupsWithoutFutureMeetings.push(group);
+    }
+  });
+  return [
+    ...groupsWithFutureMeetings.sort(compareForSortFutureMeeting),
+    ...groupsWithoutFutureMeetings.sort(compareForSort).reverse(),
+  ];
+}
+
+const compareForSortFutureMeeting = (a, b) => {
+  const firstOccurenceA = a.datesAndTimes && a.datesAndTimes[0];
+  const firstOccurenceB = b.datesAndTimes && b.datesAndTimes[0];
+  if (!firstOccurenceA || !firstOccurenceB) {
+    return -1;
+  }
+  const dateA = new Date(
+    firstOccurenceA && firstOccurenceA.startDate + 'T' + firstOccurenceA.startTime + ':00Z'
+  );
+  const dateB = new Date(
+    firstOccurenceB && firstOccurenceB.startDate + 'T' + firstOccurenceB.startTime + ':00Z'
+  );
+  return dateA - dateB;
+};
+
 const getFirstFutureOccurence = (occurence) =>
-  occurence && moment(occurence.endDate)?.isAfter(yesterday);
+  occurence && dayjs(occurence.endDate)?.isAfter(yesterday);
 
 const getLastPastOccurence = (occurence) =>
-  occurence && moment(occurence.startDate)?.isBefore(today);
+  occurence && dayjs(occurence.startDate)?.isBefore(today);
+
+const getCategoriesAssignedToWorks = (works) => {
+  const labels = Array.from(new Set(works.map((work) => work.category && work.category.label)));
+
+  const hslValues = getHslValuesFromLength(labels.length);
+  return labels
+    .map((label, i) => ({
+      label,
+      color: hslValues[i],
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label));
+};
 
 export {
   localeSort,
   getInitials,
   removeSpace,
   compareForSort,
+  compareMeetingDatesForSort,
   compareDatesWithStartDateForSort,
   parseTitle,
   emailIsValid,
@@ -376,6 +467,9 @@ export {
   getComboResourcesWithColor,
   getFullName,
   parseHtmlEntities,
+  parseGroupActivities,
+  parseGroupsWithMeetings,
   compareDatesForSortActivities,
   compareDatesForSortActivitiesReverse,
+  getCategoriesAssignedToWorks,
 };

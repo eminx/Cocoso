@@ -4,7 +4,7 @@ import { Route } from 'react-router-dom';
 const EditProfile = lazy(() => import('./EditProfile'));
 const Work = lazy(() => import('../works/Work'));
 const EditWork = lazy(() => import('../works/EditWork'));
-const Profile = lazy(() => import('./Profile'));
+const Profile = lazy(() => import('../../entry/UserHybrid'));
 
 export default function PageRoutes({ path, history }) {
   return (

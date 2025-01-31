@@ -24,16 +24,9 @@
 }
 
 .quill-megacontainer .ql-container.ql-snow .ql-editor {
-  border-width: 1px;
-  border-color: var(--chakra-colors-brand-500);
-  border-radius: 0px;
-}
-
-.quill-megacontainer.is-focused .ql-container.ql-snow .ql-editor {
   border-width: 2px;
-  background: var(--chakra-colors-gray-50);
-
-  border-radius: 0px;
+  border-color: var(--chakra-colors-gray-300);
+  border-radius: 6px;
 }
 
 .quill-megacontainer .ql-container.ql-snow .ql-editor {
@@ -42,7 +35,11 @@
 
 .quill-megacontainer:not(.is-focused) .ql-container.ql-snow .ql-editor:hover {
   background-color: #fff;
-  border-color: var(--chakra-colors-brand-600);
+  border-color: var(--chakra-colors-gray-500);
+}
+
+.quill-megacontainer.is-focused .ql-container.ql-snow .ql-editor {
+  border-color: var(--chakra-colors-gray-600);
 }
 
 .quill.ql-editor-text-align-center .ql-editor {

@@ -3,11 +3,11 @@ import { Navigate } from 'react-router-dom';
 import { Box, Button, Center, VStack } from '@chakra-ui/react';
 import arrayMove from 'array-move';
 
-import ActivityForm from '../../components/ActivityForm';
-import Template from '../../components/Template';
-import ConfirmModal from '../../components/ConfirmModal';
-import FormSwitch from '../../components/FormSwitch';
-import Loader from '../../components/Loader';
+import ActivityForm from '../../forms/ActivityForm';
+import Template from '../../layout/Template';
+import ConfirmModal from '../../generic/ConfirmModal';
+import FormSwitch from '../../forms/FormSwitch';
+import Loader from '../../generic/Loader';
 import {
   call,
   compareDatesWithStartDateForSort,
@@ -16,9 +16,9 @@ import {
   resizeImage,
   uploadImage,
 } from '../../utils/shared';
-import { message, Alert } from '../../components/message';
+import { message, Alert } from '../../generic/message';
 import { StateContext } from '../../LayoutContainer';
-import FormTitle from '../../components/FormTitle';
+import FormTitle from '../../forms/FormTitle';
 
 const formModel = {
   resourceId: '',

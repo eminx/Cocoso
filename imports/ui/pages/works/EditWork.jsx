@@ -5,13 +5,13 @@ import { Box, Button, Center } from '@chakra-ui/react';
 import i18n from 'i18next';
 
 import { StateContext } from '../../LayoutContainer';
-import WorkForm from '../../components/WorkForm';
-import Template from '../../components/Template';
-import { message, Alert } from '../../components/message';
-import ConfirmModal from '../../components/ConfirmModal';
+import WorkForm from '../../generic/WorkForm';
+import Template from '../../layout/Template';
+import { message, Alert } from '../../generic/message';
+import ConfirmModal from '../../generic/ConfirmModal';
 import { call, resizeImage, uploadImage } from '../../utils/shared';
-import Loader from '../../components/Loader';
-import FormTitle from '../../components/FormTitle';
+import Loader from '../../generic/Loader';
+import FormTitle from '../../forms/FormTitle';
 
 class EditWork extends PureComponent {
   state = {

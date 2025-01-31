@@ -4,11 +4,14 @@ const brand = (hue, lightness) => `hsl(${hue}deg, 80%, ${lightness}%)`;
 
 const luxxStyle = {
   field: {
-    borderColor: 'brand.500',
-    borderWidth: '1px',
-    borderRadius: '0px',
+    borderColor: 'gray.500',
+    borderRadius: '6px',
+    borderWidth: '2px',
+    _hover: {
+      borderColor: 'gray.600',
+    },
     _focus: {
-      borderWidth: '2px',
+      borderColor: 'brand.500',
     },
   },
 };
@@ -24,8 +27,8 @@ const generateTheme = (hue) => {
     initialColorMode: 'dark',
     colors: {
       brand: {
-        50: brand(hue, '95'),
-        100: brand(hue, '90'),
+        50: brand(hue, '97'),
+        100: brand(hue, '92'),
         200: brand(hue, '85'),
         300: brand(hue, '75'),
         400: brand(hue, '65'),
@@ -36,6 +39,7 @@ const generateTheme = (hue) => {
         900: brand(hue, '8'),
       },
       gray: {
+        50: 'rgb(250, 250, 250)',
         100: 'rgb(245, 245, 245)',
         200: 'rgb(235, 235, 235)',
         300: 'rgb(225, 225, 225)',
@@ -50,7 +54,7 @@ const generateTheme = (hue) => {
     components: {
       Button: {
         baseStyle: {
-          borderRadius: 0,
+          // borderRadius: 0,
           whiteSpace: 'normal',
         },
         defaultProps: {
@@ -75,8 +79,8 @@ const generateTheme = (hue) => {
       Menu: {
         baseStyle: {
           list: {
-            borderColor: 'brand.500',
-            borderRadius: 0,
+            // borderColor: 'brand.500',
+            // borderRadius: 0,
           },
         },
       },
@@ -84,7 +88,7 @@ const generateTheme = (hue) => {
         baseStyle: {
           dialog: {
             backgroundColor: '#fff',
-            borderRadius: 0,
+            // borderRadius: 0,
           },
         },
       },
@@ -127,21 +131,23 @@ const generateTheme = (hue) => {
         defaultProps: {
           borderRadius: '0',
           border: '1px solid',
-          borderColor: 'brand.500',
+          borderColor: 'gray.500',
         },
       },
       Textarea: {
         defaultProps: {
+          colorScheme: 'brand',
           focusBorderColor: color,
           variant: 'luxx',
+          borderWidth: '2px',
         },
         variants: {
-          luxx: luxxStyle.field,
+          luxx: luxxStyle,
         },
       },
     },
     styles: {
-      global: (props) => ({
+      global: () => ({
         body: {
           // color: mode('gray.800', 'whiteAlpha.900')(props),
           // bg: mode('gray.100', '#141214')(props),
@@ -154,4 +160,4 @@ const generateTheme = (hue) => {
   return theme;
 };
 
-export { generateTheme };
+export default generateTheme;

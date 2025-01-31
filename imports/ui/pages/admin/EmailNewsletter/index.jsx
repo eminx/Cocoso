@@ -1,19 +1,19 @@
 import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Box, Center, Link as CLink, Text } from '@chakra-ui/react';
-import { ExternalLinkIcon } from '@chakra-ui/icons';
+import ExternalLinkIcon from 'lucide-react/dist/esm/icons/external-link';
 import { render as renderEmail } from '@react-email/render';
 import { useTranslation } from 'react-i18next';
 
-import Template from '../../../components/Template';
+import Template from '../../../layout/Template';
 import { call, resizeImage, uploadImage } from '../../../utils/shared';
-import Loader from '../../../components/Loader';
-import { message, Alert } from '../../../components/message';
+import Loader from '../../../generic/Loader';
+import { message, Alert } from '../../../generic/message';
 import { StateContext } from '../../../LayoutContainer';
-import Modal from '../../../components/Modal';
+import Modal from '../../../generic/Modal';
 import EmailPreview from './EmailPreview';
 import EmailForm from './EmailForm';
-import ConfirmModal from '../../../components/ConfirmModal';
+import ConfirmModal from '../../../generic/ConfirmModal';
 import { AdminMenu } from '../Settings';
 
 const emailModel = {

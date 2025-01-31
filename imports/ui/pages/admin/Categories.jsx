@@ -14,8 +14,8 @@ import {
 import { useTranslation } from 'react-i18next';
 
 import { call } from '../../utils/shared';
-import Loader from '../../components/Loader';
-import { message, Alert } from '../../components/message';
+import Loader from '../../generic/Loader';
+import { message, Alert } from '../../generic/message';
 import { StateContext } from '../../LayoutContainer';
 
 const specialCh = /[!@#$%^&*()/\s/_+\=\[\]{};':"\\|,.<>\/?]+/;

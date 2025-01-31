@@ -7,12 +7,12 @@ import heic2any from 'heic2any';
 
 import convertHeic from '../../../api/_utils/heic-converter';
 import { StateContext } from '../../LayoutContainer';
-import WorkForm from '../../components/WorkForm';
-import Template from '../../components/Template';
-import { message, Alert } from '../../components/message';
+import WorkForm from '../../generic/WorkForm';
+import Template from '../../layout/Template';
+import { message, Alert } from '../../generic/message';
 import { call, resizeImage, uploadImage } from '../../utils/shared';
-import FormTitle from '../../components/FormTitle';
-import Loader from '../../components/Loader';
+import FormTitle from '../../forms/FormTitle';
+import Loader from '../../generic/Loader';
 
 const formModel = {
   additionalInfo: '',

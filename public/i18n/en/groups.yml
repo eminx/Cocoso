@@ -6,6 +6,8 @@ labels:
   invite: Manage access
   attendees: Attendees
   meetings: Meetings
+  meeting_dates: See all meeting dates
+  next_meeting: Next meeting
 
 tabs:
   active: Active
@@ -56,6 +58,7 @@ actions:
   leave: Leave
   archive: Archive
   unarchive: Unarchive
+  register: Dates & RSVP
 
 meeting:
   attends:
@@ -136,3 +139,9 @@ modal:
 private:
   title: private
   info: Private groups are only visible by their members, and participation is possible only via invites by their admins.
+
+admin:
+  admin: Admin
+  add_document: Add Document
+  add_meeting: Add Meeting
+  manage_members: Manage Members

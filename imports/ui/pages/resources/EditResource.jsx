@@ -5,13 +5,13 @@ import { useTranslation } from 'react-i18next';
 
 import { StateContext } from '../../LayoutContainer';
 import { call } from '../../utils/shared';
-import { message } from '../../components/message';
+import { message } from '../../generic/message';
 import NotFoundPage from '../NotFoundPage';
-import Template from '../../components/Template';
+import Template from '../../layout/Template';
 import ResourceForm from './components/ResourceForm';
-import ConfirmModal from '../../components/ConfirmModal';
-import { Alert } from '../../components/message';
-import FormTitle from '../../components/FormTitle';
+import ConfirmModal from '../../generic/ConfirmModal';
+import { Alert } from '../../generic/message';
+import FormTitle from '../../forms/FormTitle';
 
 function EditResourcePage({ history }) {
   const { role } = useContext(StateContext);

@@ -42,8 +42,6 @@ Meteor.methods({
     }
     const host = getHost(this);
 
-    const unSeenIndex = Chats.findOne({ contextId: values.contextId })?.messages?.length;
-
     try {
       Chats.update(
         { contextId: values.contextId },
@@ -53,6 +51,7 @@ Meteor.methods({
               content: values.message,
               host,
               senderUsername: user.username,
+              senderAvatar: user.avatar?.src,
               senderId: user._id,
               createdDate: new Date(),
             },
@@ -64,6 +63,7 @@ Meteor.methods({
         }
       );
       if (values.context === 'groups') {
+        const unSeenIndex = Chats.findOne({ contextId: values.contextId })?.messages?.length - 1;
         Meteor.call('createGroupNotification', host, values, unSeenIndex);
       }
     } catch (error) {

@@ -13,17 +13,44 @@ Meteor.methods({
     }
 
     try {
-      return Pages.find({
-        host,
-      }).fetch();
+      return Pages.find(
+        {
+          host,
+        },
+        { sort: { creationDate: -1 } }
+      ).fetch();
     } catch (error) {
-      throw new Meteor.Error(error, "Couldn't add to Collection");
+      throw new Meteor.Error(error, "Couldn't get pages");
+    }
+  },
+
+  getPageTitles(host) {
+    if (!host) {
+      host = getHost(this);
+    }
+
+    try {
+      const pages = Pages.find(
+        {
+          host,
+        },
+        {
+          sort: { creationDate: -1 },
+          fields: {
+            title: 1,
+          },
+        }
+      ).fetch();
+
+      return pages.map((p) => p.title);
+    } catch (error) {
+      throw new Meteor.Error(error, "Couldn't get pages");
     }
   },
 
   getPortalHostPages() {
     const portalHost = Hosts.findOne({ isPortalHost: true });
-    return Pages.find({ host: portalHost.host }).fetch();
+    return Pages.find({ host: portalHost.host }, { sort: { creationDate: -1 } }).fetch();
   },
 
   createPage(formValues, images) {

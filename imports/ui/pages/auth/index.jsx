@@ -1,12 +1,24 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { joiResolver } from '@hookform/resolvers/joi';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
-import { Box, Button, Center, Checkbox, Flex, Input, Link, Text, VStack } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Center,
+  Checkbox,
+  Flex,
+  Heading,
+  Input,
+  Link,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
+import { z } from 'zod';
 
-import FormField from '../../components/FormField';
-import ConfirmModal from '../../components/ConfirmModal';
-import Terms from '../../components/Terms';
+import FormField from '../../forms/FormField';
+import ConfirmModal from '../../generic/ConfirmModal';
+import Terms from '../../entry/Terms';
 
 import {
   loginModel,
@@ -19,19 +31,19 @@ import {
   passwordSchema,
 } from './account.helpers';
 
-const Joi = require('joi');
-
 const Login = ({ isSubmitted, onSubmit }) => {
   const [t] = useTranslation('accounts');
   const [tc] = useTranslation('common');
-  const schema = Joi.object({
+  const schema = z.object({
     ...usernameOrEmailSchema,
     ...passwordSchema,
   });
   const { handleSubmit, register } = useForm({
     defaultValues: loginModel,
-    resolver: joiResolver(schema),
+    resolver: zodResolver(schema),
   });
+
+  // const { errors, isDirty, isSubmitting } = formState;
 
   return (
     <form onSubmit={handleSubmit((data) => onSubmit(data))}>
@@ -59,7 +71,7 @@ const Signup = ({ hideTermsCheck = false, onSubmit }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [t] = useTranslation('accounts');
   const [tc] = useTranslation('common');
-  const schema = Joi.object({
+  const schema = z.object({
     ...usernameSchema,
     ...emailSchema,
     ...passwordSchema,
@@ -69,7 +81,7 @@ const Signup = ({ hideTermsCheck = false, onSubmit }) => {
 
   const { formState, handleSubmit, register } = useForm({
     defaultValues: signupModel,
-    resolver: joiResolver(schema),
+    resolver: zodResolver(schema),
   });
   const { errors, isDirty, isSubmitting } = formState;
 
@@ -169,13 +181,13 @@ const Signup = ({ hideTermsCheck = false, onSubmit }) => {
 const ForgotPassword = ({ onForgotPassword }) => {
   const [t] = useTranslation('accounts');
   const [tc] = useTranslation('common');
-  const schema = Joi.object({
+  const schema = z.object({
     ...emailSchema,
   });
 
   const { formState, handleSubmit, register } = useForm({
     defaultValues: forgotPasswordModel,
-    resolver: joiResolver(schema),
+    resolver: zodResolver(schema),
   });
   const { errors, isDirty, isSubmitting } = formState;
 
@@ -203,13 +215,13 @@ const ForgotPassword = ({ onForgotPassword }) => {
 const ResetPassword = ({ onResetPassword }) => {
   const [t] = useTranslation('accounts');
   const [tc] = useTranslation('common');
-  const schema = Joi.object({
+  const schema = z.object({
     ...passwordSchema,
   });
 
   const { formState, handleSubmit, register } = useForm({
     defaultValues: resetPasswordModel,
-    resolver: joiResolver(schema),
+    resolver: zodResolver(schema),
   });
   const { errors, isDirty, isSubmitting } = formState;
 
@@ -239,6 +251,7 @@ const ResetPassword = ({ onResetPassword }) => {
 
 const AuthContainer = () => {
   const [mode, setMode] = useState('signup');
+  const [t] = useTranslation('accounts');
 
   if (mode === 'signup') {
     return (

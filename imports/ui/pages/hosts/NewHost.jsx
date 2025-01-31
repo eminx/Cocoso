@@ -2,9 +2,9 @@ import React, { useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, Center } from '@chakra-ui/react';
 
-import Template from '../../components/Template';
-import NewHostForm from '../../components/NewHostForm';
-import { message, Alert } from '../../components/message';
+import Template from '../../layout/Template';
+import NewHostForm from '../../forms/NewHostForm';
+import { message, Alert } from '../../generic/message';
 import { call } from '../../utils/shared';
 import { StateContext } from '../../LayoutContainer';
 

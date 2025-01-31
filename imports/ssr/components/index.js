@@ -1,332 +1,311 @@
 import { Meteor } from 'meteor/meteor';
 import React from 'react';
-import { useParams } from 'react-router-dom';
-import { Center, Heading, Img, VStack, Wrap } from '@chakra-ui/react';
-import { Helmet } from 'react-helmet';
+import { useLocation, useParams } from 'react-router-dom';
+import { parse } from 'query-string';
 
-import WrapperSSR from './WrapperSSR';
-import EntrySSR from './EntrySSR';
-import Gridder from './Gridder';
-import { parseTitle } from '../../ui/utils/shared';
-
-export function Home({ host }) {
-  const Host = Meteor.call('getHost', host);
-  const pageHeading = Host?.settings?.name;
-
-  if (!Host) {
-    return null;
-  }
-
-  return (
-    <WrapperSSR
-      Host={Host}
-      imageUrl={Host.logo}
-      subTitle={Host.settings?.address}
-      title={pageHeading}
-    />
-  );
-}
+import WrapperSSR from '../../ui/layout/WrapperSSR';
+import ActivityHybrid from '../../ui/entry/ActivityHybrid';
+import GroupsHybrid from '../../ui/listing/GroupsHybrid';
+import GroupHybrid from '../../ui/entry/GroupHybrid';
+import ResourcesHybrid from '../../ui/listing/ResourcesHybrid';
+import ResourceHybrid from '../../ui/entry/ResourceHybrid';
+import WorksHybrid from '../../ui/listing/WorksHybrid';
+import WorkHybrid from '../../ui/entry/WorkHybrid';
+import UsersHybrid from '../../ui/listing/UsersHybrid';
+import PageHybrid from '../../ui/entry/PageHybrid';
+import ActivitiesHybrid from '../../ui/listing/ActivitiesHybrid';
+import CommunitiesHybrid from '../../ui/pages/hosts/CommunitiesHybrid';
 
 export function ActivitiesList({ host, sink }) {
-  const activities = Meteor.call('getAllPublicActivities', host);
+  const location = useLocation();
+  const { search } = location;
+  const { showPast } = parse(search, { parseBooleans: true });
+
   const Host = Meteor.call('getHost', host);
-
-  if (!Host) {
-    return null;
-  }
-
-  const pageHeading = Host.settings?.menu.find((item) => item.name === 'activities')?.label;
-  const pageDescription = Host.settings?.menu.find(
-    (item) => item.name === 'activities'
-  )?.description;
-  const metaTitle = `${Host.settings?.name} | ${pageHeading}`;
+  const activities = Host.isPortalHost
+    ? Meteor.call('getAllPublicActivitiesFromAllHosts', Boolean(showPast))
+    : Meteor.call('getAllPublicActivities', Boolean(showPast), host);
 
   sink.appendToBody(`
     <script>
-      window.__PRELOADED_STATE__ = ${JSON.stringify(activities).replace(/</g, '\\u003c')}
+      window.__PRELOADED_STATE__ = ${JSON.stringify({ activities, Host }).replace(/</g, '\\u003c')}
     </script>
   `);
 
+  if (!Host) {
+    return null;
+  }
+
   return (
-    <WrapperSSR Host={Host} imageUrl={Host.logo} subTitle={pageDescription} title={metaTitle}>
-      <PageHeading>{pageHeading}</PageHeading>
-      <Gridder items={activities} />
+    <WrapperSSR Host={Host}>
+      <ActivitiesHybrid activities={activities} Host={Host} showPast={Boolean(showPast)} />
     </WrapperSSR>
   );
 }
 
-export function Activity({ host }) {
+export function Activity({ host, sink }) {
   const { activityId } = useParams();
   const activity = Meteor.call('getActivityById', activityId);
   const Host = Meteor.call('getHost', host);
+
+  sink.appendToBody(`
+    <script>
+      window.__PRELOADED_STATE__ = ${JSON.stringify({ activity, Host }).replace(/</g, '\\u003c')}
+    </script>
+  `);
 
   if (!activity) {
     return null;
   }
 
   return (
-    <WrapperSSR
-      description={activity.longDescription}
-      Host={Host}
-      isEntryPage
-      imageUrl={activity.images && activity.images[0]}
-      subTitle={activity.subTitle}
-      title={activity.title}
-    >
-      <EntrySSR
-        description={activity.longDescription}
-        imageUrl={(activity.images && activity.images[0]) || activity.imageUrl}
-        subTitle={activity.subTitle}
-        title={activity.title}
-      />
+    <WrapperSSR isEntryPage Host={Host}>
+      <ActivityHybrid activity={activity} Host={Host} />
     </WrapperSSR>
   );
 }
 
-export function GroupsList({ host }) {
+export function GroupsList({ host, sink }) {
   const Host = Meteor.call('getHost', host);
-  const groups = Meteor.call('getGroups', Host.isPortalHost, host);
+  const groups = Meteor.call('getGroupsWithMeetings', Host?.isPortalHost, host);
 
-  const pageHeading = Host?.settings?.menu.find((item) => item.name === 'groups')?.label;
-  const pageDescription = Host?.settings?.menu.find((item) => item.name === 'groups')?.description;
-  const metaTitle = `${Host?.settings?.name} | ${pageHeading}`;
+  sink.appendToBody(`
+    <script>
+      window.__PRELOADED_STATE__ = ${JSON.stringify({ groups, Host }).replace(/</g, '\\u003c')}
+    </script>
+  `);
 
   return (
-    <WrapperSSR Host={Host} imageUrl={Host.logo} subTitle={pageDescription} title={metaTitle}>
-      <PageHeading>{pageHeading}</PageHeading>
-      <Gridder items={groups} />
+    <WrapperSSR Host={Host}>
+      <GroupsHybrid groups={groups} Host={Host} />
     </WrapperSSR>
   );
 }
 
-export function Group({ host }) {
+export function Group({ host, sink }) {
   const { groupId } = useParams();
-  const group = Meteor.call('getGroup', groupId);
+  const group = Meteor.call('getGroupWithMeetings', groupId);
   const Host = Meteor.call('getHost', host);
+
+  sink.appendToBody(`
+    <script>
+      window.__PRELOADED_STATE__ = ${JSON.stringify({ group, Host }).replace(/</g, '\\u003c')}
+    </script>
+  `);
 
   if (!group) {
     return null;
   }
 
   return (
-    <WrapperSSR
-      description={group.description}
-      Host={Host}
-      isEntryPage
-      imageUrl={group.imageUrl}
-      subTitle={group.readingMaterial}
-      title={group.title}
-    >
-      <EntrySSR
-        description={group.longDescription}
-        imageUrl={group.imageUrl}
-        subTitle={group.readingMaterial}
-        title={group.title}
-      />
+    <WrapperSSR isEntryPage Host={Host}>
+      <GroupHybrid group={group} Host={Host} />
     </WrapperSSR>
   );
 }
 
-export function ResourcesList({ host }) {
+export function ResourcesList({ host, sink }) {
   const Host = Meteor.call('getHost', host);
-  const resources = Meteor.call('getResources', host);
+  const resources = Host.isPortalHost
+    ? Meteor.call('getResourcesFromAllHosts')
+    : Meteor.call('getResources', host);
 
-  const pageHeading = Host?.settings?.menu.find((item) => item.name === 'resources')?.label;
-  const pageDescription = Host?.settings?.menu.find(
-    (item) => item.name === 'resources'
-  )?.description;
-  const metaTitle = `${pageHeading} | ${Host.settings?.name}`;
+  sink.appendToBody(`
+    <script>
+      window.__PRELOADED_STATE__ = ${JSON.stringify({ resources, Host }).replace(/</g, '\\u003c')}
+    </script>
+  `);
 
   return (
-    <WrapperSSR Host={Host} imageUrl={Host.logo} subTitle={pageDescription} title={metaTitle}>
-      <PageHeading>{pageHeading}</PageHeading>
-      <Gridder items={resources} />
+    <WrapperSSR Host={Host}>
+      <ResourcesHybrid Host={Host} resources={resources} />
     </WrapperSSR>
   );
 }
 
-export function Resource({ host }) {
+export function Resource({ host, sink }) {
   const { resourceId } = useParams();
   const resource = Meteor.call('getResourceById', resourceId);
+  const documents = Meteor.call('getDocumentsByAttachments', resourceId);
   const Host = Meteor.call('getHost', host);
+
+  sink.appendToBody(`
+    <script>
+      window.__PRELOADED_STATE__ = ${JSON.stringify({ documents, resource, Host }).replace(
+        /</g,
+        '\\u003c'
+      )}
+    </script>
+  `);
 
   if (!resource) {
     return null;
   }
 
   return (
-    <WrapperSSR
-      description={resource.description}
-      Host={Host}
-      isEntryPage
-      imageUrl={resource.images && resource.images[0]}
-      title={resource.label}
-    >
-      <EntrySSR
-        description={resource.description}
-        imageUrl={resource.images && resource.images[0]}
-        title={resource.label}
-      />
+    <WrapperSSR isEntryPage Host={Host}>
+      <ResourceHybrid documents={documents} resource={resource} Host={Host} />
     </WrapperSSR>
   );
 }
 
-export function WorksList({ host }) {
+export function WorksList({ host, sink }) {
   const Host = Meteor.call('getHost', host);
-  const works = Meteor.call('getAllWorks', host);
+  const works = Host.isPortalHost
+    ? Meteor.call('getAllWorksFromAllHosts')
+    : Meteor.call('getAllWorks', host);
 
-  const pageHeading = Host.settings?.menu.find((item) => item.name === 'works')?.label;
-  const pageDescription = Host.settings?.menu.find((item) => item.name === 'works')?.description;
-  const metaTitle = `${Host.settings?.name} | ${pageHeading}`;
+  sink.appendToBody(`
+    <script>
+      window.__PRELOADED_STATE__ = ${JSON.stringify({ works, Host }).replace(/</g, '\\u003c')}
+    </script>
+  `);
 
   return (
-    <WrapperSSR Host={Host} imageUrl={Host.logo} subTitle={pageDescription} title={metaTitle}>
-      <PageHeading>{pageHeading}</PageHeading>
-      <Gridder items={works} />
+    <WrapperSSR Host={Host}>
+      <WorksHybrid Host={Host} works={works} />
     </WrapperSSR>
   );
 }
 
-export function Work({ host }) {
+export function Work({ host, sink }) {
   const { workId, usernameSlug } = useParams();
-  const [empty, username] = usernameSlug.split('@');
+  const [, username] = usernameSlug.split('@');
   const work = Meteor.call('getWork', workId, username);
+  const documents = Meteor.call('getDocumentsByAttachments', workId);
   const Host = Meteor.call('getHost', host);
 
   if (!work) {
     return null;
   }
 
+  sink.appendToBody(`
+    <script>
+      window.__PRELOADED_STATE__ = ${JSON.stringify({ work, Host }).replace(/</g, '\\u003c')}
+    </script>
+  `);
+
   return (
-    <WrapperSSR
-      description={work.longDescription}
-      Host={Host}
-      isEntryPage
-      imageUrl={work.images && work.images[0]}
-      subTitle={work.shortDescription}
-      title={work.title}
-    >
-      <EntrySSR
-        description={work.longDescription}
-        imageUrl={work.images && work.images[0]}
-        subTitle={work.shortDescription}
-        title={work.title}
-      />
+    <WrapperSSR isEntryPage Host={Host}>
+      <WorkHybrid documents={documents} work={work} Host={Host} />
     </WrapperSSR>
   );
 }
 
-export function Page({ host }) {
-  const { pageTitle } = useParams();
+export function Page({ host, sink }) {
   const pages = Meteor.call('getPages', host);
-  const page = pages.find((page) => parseTitle(page.title) === pageTitle);
   const Host = Meteor.call('getHost', host);
 
-  if (!page) {
+  if (!pages) {
     return null;
   }
 
+  sink.appendToBody(`
+    <script>
+      window.__PRELOADED_STATE__ = ${JSON.stringify({ pages, Host }).replace(/</g, '\\u003c')}
+    </script>
+  `);
+
   return (
-    <WrapperSSR
-      description={page.longDescription}
-      Host={Host}
-      imageUrl={page.images && page.images[0]}
-      title={page.title}
-    >
-      <EntrySSR
-        description={page.longDescription}
-        imageUrl={page.images && page.images[0]}
-        title={page.title}
-      />
+    <WrapperSSR isEntryPage Host={Host}>
+      <PageHybrid pages={pages} Host={Host} />
     </WrapperSSR>
   );
 }
 
-export function UsersList({ host }) {
+export function UsersList({ host, sink }) {
   const Host = Meteor.call('getHost', host);
-  const users = Meteor.call('getHostMembers', host);
+  const users = Host.isPortalHost
+    ? Meteor.call('getAllMembersFromAllHosts')
+    : Meteor.call('getHostMembers', host);
 
-  const pageHeading = Host.settings?.menu.find((item) => item.name === 'people')?.label;
-  const pageDescription = Host.settings?.menu.find((item) => item.name === 'people')?.description;
-  const metaTitle = `${Host.settings?.name} | ${pageHeading}`;
+  const keywords = Meteor.call('getKeywords');
+
+  sink.appendToBody(`
+    <script>
+      window.__PRELOADED_STATE__ = ${JSON.stringify({ keywords, users, Host }).replace(
+        /</g,
+        '\\u003c'
+      )}
+    </script>
+  `);
 
   return (
-    <WrapperSSR Host={Host} imageUrl={Host.logo} subTitle={pageDescription} title={metaTitle}>
-      <Helmet>
-        <meta charSet="utf-8" />
-        <title>{metaTitle}</title>
-        <meta name="title" content={metaTitle} />
-        <meta property="og:title" content={metaTitle?.substring(0, 30)} />
-        <meta property="og:description" content={pageDescription?.substring(0, 60)} />
-        <meta property="og:image" content={users.find((u) => u.avatar?.src)?.avatar?.src} />
-        <meta property="og:type" content="article" />
-        <link rel="canonical" href={host.host} />
-      </Helmet>
-
-      <PageHeading>{pageHeading}</PageHeading>
-
-      <Center>
-        <Wrap justify="center">
-          {users.map((user) => (
-            <VStack key={user._id}>
-              <Img w={240} h={240} objectFit="cover" src={user.avatar?.src} />
-              <Heading fontSize={22}>{user.username}</Heading>
-            </VStack>
-          ))}
-        </Wrap>
-      </Center>
+    <WrapperSSR Host={Host}>
+      <UsersHybrid Host={Host} keywords={keywords} users={users} />
     </WrapperSSR>
   );
 }
 
-export function User({ host }) {
+export function User({ host, sink }) {
   const Host = Meteor.call('getHost', host);
   const { usernameSlug } = useParams();
   if (usernameSlug[0] !== '@') {
     return null;
   }
-  const [empty, username] = usernameSlug.split('@');
+  const [, username] = usernameSlug.split('@');
   const user = Meteor.call('getUserInfo', username, host);
 
+  sink.appendToBody(`
+    <script>
+      window.__PRELOADED_STATE__ = ${JSON.stringify({ user, Host }).replace(/</g, '\\u003c')}
+    </script>
+  `);
+
   return (
-    <WrapperSSR
-      description={user.bio}
-      Host={Host}
-      isEntryPage
-      imageUrl={user.avatar?.src}
-      subTitle={user.firstName ? `${user.firstName} ${user.lastName}` : null}
-      title={user.username}
-    >
-      <EntrySSR
-        description={user.bio}
-        imageUrl={user.avatar?.src}
-        subTitle={user.firstName ? `${user.firstName} ${user.lastName}` : null}
-        title={user.username}
-      />
+    <WrapperSSR isEntryPage Host={Host}>
+      <UsersHybrid Host={Host} user={user} />
     </WrapperSSR>
   );
 }
 
-export function Communities({ host }) {
-  const allHosts = Meteor.call('getAllHosts');
+export function Communities({ host, sink }) {
   const Host = Meteor.call('getHost', host);
-  const pageHeading = 'Communities';
-  const metaTitle = `${Host?.settings?.name} | ${pageHeading}`;
+  const hosts = Meteor.call('getAllHosts');
+
+  sink.appendToBody(`
+    <script>
+      window.__PRELOADED_STATE__ = ${JSON.stringify({ hosts, Host }).replace(/</g, '\\u003c')}
+    </script>
+  `);
 
   return (
-    <WrapperSSR Host={Host} imageUrl={Host.logo} title={metaTitle}>
-      <PageHeading>{pageHeading}</PageHeading>
-      <Gridder items={allHosts} />
+    <WrapperSSR Host={Host}>
+      <CommunitiesHybrid Host={Host} hosts={hosts} />
     </WrapperSSR>
   );
 }
 
-function PageHeading({ children }) {
-  return (
-    <Center mb="8">
-      <Heading fontFamily="'Arial', 'sans-serif" textAlign="center">
-        {children}
-      </Heading>
-    </Center>
-  );
+export function Home(props) {
+  const host = props?.host;
+  const Host = Meteor.call('getHost', host);
+
+  if (!Host) {
+    return null;
+  }
+
+  const getComponentBasedOnFirstRoute = () => {
+    const menuItems = Host.settings?.menu;
+    const visibleMenu = menuItems.filter((item) => item.isVisible);
+    const firstRoute = visibleMenu && visibleMenu[0].name;
+
+    switch (firstRoute) {
+      case 'activities':
+        return <ActivitiesList {...props} />;
+      case 'groups':
+        return <GroupsList {...props} />;
+      case 'works':
+        return <WorksList {...props} />;
+      case 'resources':
+        return <ResourcesList {...props} />;
+      case 'info':
+        return <Page {...props} />;
+      default:
+        return <UsersList {...props} />;
+    }
+  };
+
+  const Component = getComponentBasedOnFirstRoute();
+
+  return Component;
 }

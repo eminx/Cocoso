@@ -135,9 +135,30 @@ const acceptedDocumentFormatsForUploads = [
 
 const maximumDocumentSizeForUploads = '30 MB';
 
+const accordionProps = {
+  buttonProps: {
+    _hover: { bg: 'brand.200' },
+    _expanded: { bg: 'brand.500', color: 'white' },
+    bg: 'brand.100',
+    borderWidth: '0',
+    borderRadius: '8px',
+    color: 'brand.800',
+  },
+  itemProps: {
+    mb: '4',
+    borderTopWidth: '0',
+  },
+  panelProps: {
+    bg: 'brand.50',
+    borderRadius: '8px',
+    mt: '2',
+  },
+};
+
 export {
   acceptedImageFormatsForUploads,
   acceptedDocumentFormatsForUploads,
+  accordionProps,
   adminMenu,
   hostFields,
   platformFields,

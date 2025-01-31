@@ -5,14 +5,14 @@ import { Box, Button, Center, Flex, Input, Stack, Switch as CSwitch, Text } from
 import { useForm } from 'react-hook-form';
 
 import { StateContext } from '../../LayoutContainer';
-import Loader from '../../components/Loader';
-import { message, Alert } from '../../components/message';
+import Loader from '../../generic/Loader';
+import { message, Alert } from '../../generic/message';
 import { call, resizeImage, uploadImage } from '../../utils/shared';
-import FormField from '../../components/FormField';
-import FileDropper from '../../components/FileDropper';
-import Tabs from '../../components/Tabs';
-import ReactQuill from '../../components/Quill';
-import Template from '../../components/Template';
+import FormField from '../../forms/FormField';
+import FileDropper from '../../forms/FileDropper';
+import Tabs from '../../entry/Tabs';
+import ReactQuill from '../../forms/Quill';
+import Template from '../../layout/Template';
 import { AdminMenu } from './Settings';
 
 export default function PlatformSettings() {

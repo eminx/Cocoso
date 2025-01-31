@@ -3,7 +3,7 @@ import { Box, Button, Flex, Heading, Text } from '@chakra-ui/react';
 import CreatableSelect from 'react-select/creatable';
 import makeAnimated from 'react-select/animated';
 import { useTranslation } from 'react-i18next';
-import { message } from '../../components/message';
+import { message } from '../../generic/message';
 import { call } from '../../utils/shared';
 
 const animatedComponents = makeAnimated();

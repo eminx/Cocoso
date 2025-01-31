@@ -1,7 +1,8 @@
 import React, { useContext, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { Box, Button, Center, Heading, Image } from '@chakra-ui/react';
-import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
+import ChevronLeftIcon from 'lucide-react/dist/esm/icons/chevron-left';
+import ChevronRightIcon from 'lucide-react/dist/esm/icons/chevron-right';
 import { useTranslation } from 'react-i18next';
 import parseHtml from 'html-react-parser';
 

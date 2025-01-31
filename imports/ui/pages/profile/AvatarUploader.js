@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Button, Center, Flex, Text, VStack } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 
-import FileDropper from '../../components/FileDropper';
+import FileDropper from '../../forms/FileDropper';
 
 export default function AvatarUploader({
   imageUrl,

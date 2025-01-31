@@ -13,14 +13,14 @@ import {
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import Template from '../../components/Template';
+import Template from '../../layout/Template';
 import { call } from '../../utils/shared';
-import Loader from '../../components/Loader';
-import { message, Alert } from '../../components/message';
+import Loader from '../../generic/Loader';
+import { message, Alert } from '../../generic/message';
 import { StateContext } from '../../LayoutContainer';
-import FormField from '../../components/FormField';
+import FormField from '../../forms/FormField';
 import { defaultEmails } from '../../../startup/constants';
-import ReactQuill from '../../components/Quill';
+import ReactQuill from '../../forms/Quill';
 import { AdminMenu } from './Settings';
 
 function Emails() {

@@ -6,6 +6,8 @@ labels:
   invite: Erişimi Yönet
   attendees: Katılımcılar
   meetings: Buluşmalar
+  meeting_dates: Tüm buluşma tarihlerini göster
+  next_meeting: Bir sonraki buluşma
 
 tabs:
   active: Aktif
@@ -56,6 +58,7 @@ actions:
   leave: Ayrıl
   archive: Arşivle
   unarchive: Aktifleştir
+  register: Buluşmalar & Kaydol
 
 meeting:
   attends:
@@ -136,3 +139,9 @@ modal:
 private:
   title: Gizli
   info: Gizli süreçleri sadece üyeleri görebilir ve katılım sadece adminlerinin daveti ile mümkündür.
+
+admin:
+  admin: Admin
+  add_document: Doküman Ekle
+  add_meeting: Buluşma Ekle
+  manage_members: Üyeleri Yönet

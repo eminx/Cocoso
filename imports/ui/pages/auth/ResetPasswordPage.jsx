@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { ResetPassword } from './index';
 import { StateContext } from '../../LayoutContainer';
 import { call } from '../../utils/shared';
-import { message } from '../../components/message';
+import { message } from '../../generic/message';
 
 function ResetPasswordPage() {
   const [t] = useTranslation('accounts');
@@ -29,7 +29,7 @@ function ResetPasswordPage() {
   }
 
   return (
-    <Box pb="8" minHeight="100vh">
+    <Box pb="8">
       <Center p="4">
         <Box w="xs">
           <Heading size="md" textAlign="center" mb="4">

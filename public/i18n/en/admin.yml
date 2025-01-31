@@ -1,4 +1,6 @@
 # ADMIN SETTINGS PAGE
+label: Admin
+
 settings:
   label: Settings
   tabs:

@@ -3,11 +3,11 @@ import { Link, Route, Routes, useNavigate, useParams } from 'react-router-dom';
 import { Box, Center, Divider, Flex, Heading, Image, Link as CLink, Text } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 
-import NiceList from '../../../components/NiceList';
+import NiceList from '../../../generic/NiceList';
 import { call } from '../../../utils/shared';
-import { message } from '../../../components/message';
-import Loader from '../../../components/Loader';
-import Modal from '../../../components/Modal';
+import { message } from '../../../generic/message';
+import Loader from '../../../generic/Loader';
+import Modal from '../../../generic/Modal';
 import EmailPreview from './EmailPreview';
 import { StateContext } from '../../../LayoutContainer';
 

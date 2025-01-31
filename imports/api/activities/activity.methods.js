@@ -1,14 +1,17 @@
 import { Meteor } from 'meteor/meteor';
-import moment from 'moment';
 
 import { getHost } from '../_utils/shared';
 import { isAdmin, isContributorOrAdmin } from '../users/user.roles';
 import Hosts from '../hosts/host';
 import Activities from './activity';
 import Groups from '../groups/group';
-import Resources from '../resources/resource';
 import Platform from '../platform/platform';
 import { getRegistrationEmailBody, getUnregistrationEmailBody } from './activity.mails';
+import {
+  compareDatesForSortActivities,
+  compareDatesForSortActivitiesReverse,
+  parseGroupActivities,
+} from '../../ui/utils/shared';
 
 const filterPrivateGroups = (activities, user) => {
   return activities.filter((act) => {
@@ -29,15 +32,65 @@ const filterPrivateGroups = (activities, user) => {
 };
 
 Meteor.methods({
-  getAllPublicActivitiesFromAllHosts() {
+  getAllPublicActivitiesFromAllHosts(showPast = false) {
     const user = Meteor.user();
-    try {
-      const allActs = Activities.find({
-        $or: [{ isPublicActivity: true }, { isGroupMeeting: true }],
-      }).fetch();
+    const dateNow = new Date().toISOString().substring(0, 10);
 
-      return filterPrivateGroups(allActs, user);
+    try {
+      if (showPast) {
+        const pastActs = Activities.find({
+          $or: [{ isPublicActivity: true }, { isGroupMeeting: true }],
+          'datesAndTimes.startDate': { $lte: dateNow },
+        }).fetch();
+        const pastActsSorted = parseGroupActivities(pastActs)?.sort(
+          compareDatesForSortActivitiesReverse
+        );
+        return filterPrivateGroups(pastActsSorted, user);
+      }
+      const futureActs = Activities.find({
+        $or: [{ isPublicActivity: true }, { isGroupMeeting: true }],
+        'datesAndTimes.startDate': { $gte: dateNow },
+      }).fetch();
+      const futureActsSorted = parseGroupActivities(futureActs)?.sort(
+        compareDatesForSortActivities
+      );
+      return filterPrivateGroups(futureActsSorted, user);
     } catch (error) {
+      console.log(error);
+      throw new Meteor.Error(error, "Couldn't fetch data");
+    }
+  },
+
+  getAllPublicActivities(showPast = false, host) {
+    if (!host) {
+      host = getHost(this);
+    }
+    const user = Meteor.user();
+    const dateNow = new Date().toISOString().substring(0, 10);
+
+    try {
+      if (showPast) {
+        const pastActs = Activities.find({
+          host,
+          $or: [{ isPublicActivity: true }, { isGroupMeeting: true }],
+          'datesAndTimes.startDate': { $lte: dateNow },
+        }).fetch();
+        const pastActsSorted = parseGroupActivities(pastActs)?.sort(
+          compareDatesForSortActivitiesReverse
+        );
+        return filterPrivateGroups(pastActsSorted, user);
+      }
+      const futureActs = Activities.find({
+        host,
+        $or: [{ isPublicActivity: true }, { isGroupMeeting: true }],
+        'datesAndTimes.startDate': { $gte: dateNow },
+      }).fetch();
+      const futureActsSorted = parseGroupActivities(futureActs)?.sort(
+        compareDatesForSortActivities
+      );
+      return filterPrivateGroups(futureActsSorted, user);
+    } catch (error) {
+      console.log(error);
       throw new Meteor.Error(error, "Couldn't fetch data");
     }
   },
@@ -46,26 +99,9 @@ Meteor.methods({
     const user = Meteor.user();
     try {
       const allActs = Activities.find().fetch();
-      return filterPrivateGroups(allActs, user);
+      const allActsParsed = parseGroupActivities(allActs);
+      return filterPrivateGroups(allActsParsed, user);
     } catch (error) {
-      throw new Meteor.Error(error, "Couldn't fetch data");
-    }
-  },
-
-  getAllPublicActivities(host) {
-    if (!host) {
-      host = getHost(this);
-    }
-    const user = Meteor.user();
-
-    try {
-      const allActs = Activities.find({
-        host,
-        $or: [{ isPublicActivity: true }, { isGroupMeeting: true }],
-      }).fetch();
-      return filterPrivateGroups(allActs, user);
-    } catch (error) {
-      console.log(error);
       throw new Meteor.Error(error, "Couldn't fetch data");
     }
   },
@@ -79,7 +115,8 @@ Meteor.methods({
       const allActs = Activities.find({
         host,
       }).fetch();
-      return filterPrivateGroups(allActs, user);
+      const allActsParsed = parseGroupActivities(allActs);
+      return filterPrivateGroups(allActsParsed, user);
     } catch (error) {
       console.log(error);
       throw new Meteor.Error(error, "Couldn't fetch data");
@@ -139,103 +176,6 @@ Meteor.methods({
       }).fetch();
     } catch (error) {
       throw new Meteor.Error(error, "Couldn't fetch activities");
-    }
-  },
-
-  getAllOccurences() {
-    const host = getHost(this);
-    try {
-      const activities = Activities.find(
-        { host },
-        {
-          fields: {
-            title: 1,
-            authorName: 1,
-            longDescription: 1,
-            isPublicActivity: 1,
-            imageUrl: 1,
-            datesAndTimes: 1,
-            resource: 1,
-            resourceIndex: 1,
-          },
-        }
-      ).fetch();
-
-      const occurences = [];
-
-      activities.forEach((activity) => {
-        if (activity?.datesAndTimes && activity.datesAndTimes.length > 0) {
-          activity.datesAndTimes.forEach((recurrence) => {
-            const occurence = {
-              _id: activity._id,
-              title: activity.title,
-              authorName: activity.authorName,
-              longDescription: activity.longDescription,
-              imageUrl: activity.imageUrl,
-              isPublicActivity: activity.isPublicActivity,
-              isWithComboResource: false,
-              start: moment(
-                recurrence.startDate + recurrence.startTime,
-                'YYYY-MM-DD HH:mm'
-              ).toDate(),
-              end: moment(recurrence.endDate + recurrence.endTime, 'YYYY-MM-DD HH:mm').toDate(),
-              startDate: recurrence.startDate,
-              startTime: recurrence.startTime,
-              endDate: recurrence.endDate,
-              endTime: recurrence.endTime,
-              isMultipleDay:
-                recurrence.isMultipleDay || recurrence.startDate !== recurrence.endDate,
-            };
-
-            const resource = Resources.findOne(activity.resourceId, {
-              fields: { isCombo: 1 },
-            });
-
-            if (resource?.isCombo) {
-              resource.resourcesForCombo.forEach((resId) => {
-                const res = Resources.findOne(resId, {
-                  fields: { label: 1, resourceIndex: 1 },
-                });
-                occurences.push({
-                  ...occurence,
-                  resource: res.label,
-                  resourceIndex: res.resourceIndex,
-                });
-              });
-            }
-
-            occurences.push({
-              ...occurence,
-              resource: activity.resource,
-              resourceIndex: activity.resourceIndex,
-            });
-          });
-        }
-      });
-
-      return occurences;
-    } catch (error) {
-      throw new Meteor.Error(error, "Couldn't fetch works");
-    }
-  },
-
-  getAllGroupMeetings(isPortalHost = false, host) {
-    if (!host) {
-      host = getHost(this);
-    }
-
-    try {
-      if (isPortalHost) {
-        return Activities.find({
-          isGroupMeeting: true,
-        }).fetch();
-      }
-      return Activities.find({
-        host,
-        isGroupMeeting: true,
-      }).fetch();
-    } catch (error) {
-      throw new Meteor.Error(error, "Couldn't fetch data");
     }
   },
 

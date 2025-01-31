@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import i18next from 'i18next';
-import { message } from '../../components/message';
+import { message } from '../../generic/message';
 import { call } from '../../utils/shared';
 
 function loginWithPassword(username, password, isNewAccount) {

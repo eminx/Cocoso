@@ -2,11 +2,11 @@ import React, { useContext } from 'react';
 import { Box, Center } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 
-import Template from '../../components/Template';
+import Template from '../../layout/Template';
 import ResourceForm from './components/ResourceForm';
 import { StateContext } from '../../LayoutContainer';
-import { Alert } from '../../components/message';
-import FormTitle from '../../components/FormTitle';
+import { Alert } from '../../generic/message';
+import FormTitle from '../../forms/FormTitle';
 
 function NewResourcePage({ history }) {
   const [tc] = useTranslation('common');

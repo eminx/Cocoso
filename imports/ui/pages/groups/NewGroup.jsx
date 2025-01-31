@@ -14,15 +14,15 @@ import {
   Switch,
   Text,
 } from '@chakra-ui/react';
-import { InfoIcon } from '@chakra-ui/icons';
+import InfoIcon from 'lucide-react/dist/esm/icons/info';
 
-import GroupForm from '../../components/GroupForm';
+import GroupForm from '../../generic/GroupForm';
 import { call, resizeImage, uploadImage } from '../../utils/shared';
-import Loader from '../../components/Loader';
-import Template from '../../components/Template';
-import { message, Alert } from '../../components/message';
+import Loader from '../../generic/Loader';
+import Template from '../../layout/Template';
+import { message, Alert } from '../../generic/message';
 import { StateContext } from '../../LayoutContainer';
-import FormTitle from '../../components/FormTitle';
+import FormTitle from '../../forms/FormTitle';
 
 class NewGroup extends PureComponent {
   state = {

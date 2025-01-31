@@ -8,7 +8,7 @@ Chats.schema = new SimpleSchema({
   _id: Schemas.Id,
   host: Schemas.Hostname,
 
-  contextId: Schemas.Id,
+  contextId: { type: String },
   contextName: { type: String },
   contextType: { type: String },
 

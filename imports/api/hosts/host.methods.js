@@ -8,6 +8,32 @@ import Newsletters from '../newsletters/newsletter';
 import { defaultMenu, defaultEmails } from '../../startup/constants';
 import { isAdmin } from '../users/user.roles';
 
+function getUsersRandomlyWithAvatarsFirst(users) {
+  if (!users || !users.length === 0) {
+    return null;
+  }
+  const usersWithImage = users.filter((u) => u.avatar && u.avatar.src);
+  const usersWithoutImage = users.filter((u) => !u.avatar || !u.avatar.src);
+
+  return [
+    ...usersWithImage.sort(() => Math.random() - 0.5),
+    ...usersWithoutImage.sort(() => Math.random() - 0.5),
+  ];
+}
+
+const publicUserFields = {
+  _id: 1,
+  avatar: 1,
+  bio: 1,
+  contactInfo: 1,
+  firstName: 1,
+  isPublic: 1,
+  keywords: 1,
+  lastName: 1,
+  memberships: 1,
+  username: 1,
+};
+
 Meteor.methods({
   createNewHost(values) {
     const currentUser = Meteor.user();
@@ -123,7 +149,7 @@ Meteor.methods({
       return (
         hosts
           // .filter((h) => !h.isPortalHost)
-          .map((host, index) => ({
+          .map((host) => ({
             name: host.settings.name,
             logo: host.logo,
             host: host.host,
@@ -159,48 +185,25 @@ Meteor.methods({
       .find(
         { 'memberships.host': host },
         {
-          fields: {
-            avatar: 1,
-            bio: 1,
-            firstName: 1,
-            id: 1,
-            isPublic: true,
-            keywords: 1,
-            lastName: 1,
-            memberships: 1,
-            username: 1,
-          },
+          fields: publicUserFields,
         }
       )
       .fetch();
 
-    return users
-      .filter((user) => user.memberships.find((m) => m.host === host)?.isPublic)
-      .reverse();
+    return getUsersRandomlyWithAvatarsFirst(users);
   },
 
   getAllMembersFromAllHosts() {
-    return Meteor.users
+    const users = Meteor.users
       .find(
         {},
         {
-          fields: {
-            avatar: 1,
-            bio: 1,
-            contactInfo: 1,
-            date: 1,
-            firstName: 1,
-            id: 1,
-            isPublic: 1,
-            keywords: 1,
-            lastName: 1,
-            memberships: 1,
-            username: 1,
-          },
+          fields: publicUserFields,
         }
       )
-      .fetch()
-      .reverse();
+      .fetch();
+
+    return getUsersRandomlyWithAvatarsFirst(users);
   },
 
   getHostInfoPage(host) {
@@ -222,9 +225,10 @@ Meteor.methods({
   getPortalHostInfoPage() {
     const portalHost = Hosts.findOne({ isPortalHost: true });
     if (!portalHost) {
-      return;
+      throw new Meteor.Error('not portalhost');
     }
-    const infoPage = Pages.findOne(
+
+    return Pages.findOne(
       {
         host: portalHost.host,
       },
@@ -232,8 +236,6 @@ Meteor.methods({
         longDescription: 1,
       }
     );
-
-    return infoPage;
   },
 
   setHostHue(hue) {
@@ -296,17 +298,11 @@ Meteor.methods({
 
         const emailAddress = isPortalHost ? member.emails[0].address : member.email;
 
-        Meteor.call(
-          'sendEmail',
-          emailAddress,
-          email.subject,
-          emailHtmlWithUsername,
-          (error, respond) => {
-            if (error) {
-              console.log(error);
-            }
+        Meteor.call('sendEmail', emailAddress, email.subject, emailHtmlWithUsername, (error) => {
+          if (error) {
+            console.log(error);
           }
-        );
+        });
       });
     } catch (error) {
       throw new Meteor.Error(error);

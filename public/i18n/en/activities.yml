@@ -1,6 +1,8 @@
 label:
   new: Create a New Booking
   edit: Edit Booking
+  rsvp: Dates & RSVP
+  next: Next Activity
 
 form:
   switch:
@@ -68,7 +70,7 @@ public:
   labels:
     address: Address
     dates: Dates
-    datesAndRegistration: Dates & Registration
+    datesAndRegistration: Dates & RSVP
     info: Info
     location: Location
     resource: Resource

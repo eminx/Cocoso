@@ -96,3 +96,7 @@
   font-weight: 700;
   font-size: 20px;
 }
+
+.rbc-calendar .rbc-row-content {
+  z-index: 0;
+}

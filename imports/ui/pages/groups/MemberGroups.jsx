@@ -1,40 +1,35 @@
+import { Meteor } from 'meteor/meteor';
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Box } from '@chakra-ui/react';
 
-import Loader from '../../components/Loader';
-import { message } from '../../components/message';
-import Paginate from '../../components/Paginate';
-import NewGridThumb from '../../components/NewGridThumb';
-import NewEntryHelper from '../../components/NewEntryHelper';
+import { message } from '../../generic/message';
+import Paginate from '../../listing/Paginate';
+import NewGridThumb from '../../listing/NewGridThumb';
 
-function MemberGroups({ currentHost, isFederationLayout = false, isSelfAccount, user }) {
+function MemberGroups({ currentHost, user }) {
   const [groups, setGroups] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const { username } = user;
+
+  const username = user?.username;
 
   useEffect(() => {
+    if (!user || !username) {
+      return;
+    }
     Meteor.call('getGroupsByUser', username, (error, respond) => {
       if (error) {
         message(error);
-        setLoading(false);
         return;
       }
       setGroups(respond);
-      setLoading(false);
     });
   }, []);
 
-  if (loading) {
-    return <Loader />;
-  }
-
-  if (!groups || groups.length === 0) {
-    if (isSelfAccount) {
-      return <NewEntryHelper buttonLink="/groups/new" isEmptyListing />;
-    }
+  if (!user || !username || !groups || groups.length === 0) {
     return null;
   }
+
+  const isPortalHost = currentHost?.isPortalHost;
 
   return (
     <Paginate items={groups}>
@@ -45,7 +40,7 @@ function MemberGroups({ currentHost, isFederationLayout = false, isSelfAccount, 
             {isExternal ? (
               <a href={`https://${group.host}/groups/${group._id}/info`}>
                 <NewGridThumb
-                  host={isFederationLayout && group.host}
+                  host={isPortalHost && group.host}
                   imageUrl={group.imageUrl}
                   subTitle={group.readingMaterial}
                   title={group.title}
@@ -54,7 +49,7 @@ function MemberGroups({ currentHost, isFederationLayout = false, isSelfAccount, 
             ) : (
               <Link to={`/groups/${group._id}/info`}>
                 <NewGridThumb
-                  host={isFederationLayout && group.host}
+                  host={isPortalHost && group.host}
                   imageUrl={group.imageUrl}
                   subTitle={group.readingMaterial}
                   title={group.title}

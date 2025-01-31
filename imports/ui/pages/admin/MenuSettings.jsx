@@ -21,15 +21,15 @@ import {
   Code,
 } from '@chakra-ui/react';
 
-import { DragHandleIcon } from '@chakra-ui/icons';
+import DragHandleIcon from 'lucide-react/dist/esm/icons/grip-horizontal';
 import { sortableContainer, sortableElement } from 'react-sortable-hoc';
 import arrayMove from 'array-move';
 
 import { call } from '../../utils/shared';
-import Loader from '../../components/Loader';
-import { message, Alert } from '../../components/message';
+import Loader from '../../generic/Loader';
+import { message, Alert } from '../../generic/message';
 import { StateContext } from '../../LayoutContainer';
-import FormField from '../../components/FormField';
+import FormField from '../../forms/FormField';
 
 export default function MenuSettings() {
   const [loading, setLoading] = useState(true);

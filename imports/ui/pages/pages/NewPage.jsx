@@ -4,12 +4,12 @@ import { Box, Center } from '@chakra-ui/react';
 import arrayMove from 'array-move';
 import { useTranslation } from 'react-i18next';
 
-import PageForm from '../../components/PageForm';
-import Template from '../../components/Template';
-import { message, Alert } from '../../components/message';
+import PageForm from '../../generic/PageForm';
+import Template from '../../layout/Template';
+import { message, Alert } from '../../generic/message';
 import { call, parseTitle, resizeImage, uploadImage } from '../../utils/shared';
 import { StateContext } from '../../LayoutContainer';
-import FormTitle from '../../components/FormTitle';
+import FormTitle from '../../forms/FormTitle';
 
 function NewPage() {
   const { currentUser, role } = useContext(StateContext);

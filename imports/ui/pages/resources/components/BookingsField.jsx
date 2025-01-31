@@ -21,12 +21,13 @@ import {
   AccordionPanel,
   Input,
 } from '@chakra-ui/react';
-import { AddIcon, MinusIcon } from '@chakra-ui/icons';
+import AddIcon from 'lucide-react/dist/esm/icons/plus-square';
+import MinusIcon from 'lucide-react/dist/esm/icons/minus-square';
 
 import { call } from '../../../utils/shared';
-import NiceList from '../../../components/NiceList';
-import { message } from '../../../components/message';
-import DateTimePicker from '../../../components/DateTimePicker';
+import NiceList from '../../../generic/NiceList';
+import { message } from '../../../generic/message';
+import DateTimePicker from '../../../generic/DateTimePicker';
 import { StateContext } from '../../../LayoutContainer';
 import useCollisionPrevention from '../../../../api/_utils/useCollisionPrevention';
 

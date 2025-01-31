@@ -1,17 +1,7 @@
 import React from 'react';
 import { ChakraProvider, Progress } from '@chakra-ui/react';
 
-import { generateTheme } from '../ui/utils/constants/theme';
-
-function LoaderSSR() {
-  const chakraTheme = generateTheme('233');
-
-  return (
-    <ChakraProvider theme={chakraTheme}>
-      <Progress size="xs" isIndeterminate colorScheme="blue" />
-    </ChakraProvider>
-  );
-}
+import generateTheme from '../ui/utils/constants/theme';
 
 import {
   ActivitiesList,
@@ -29,7 +19,17 @@ import {
   User,
 } from './components';
 
-export const AppRoutesSSR = (host, sink) => {
+function LoaderSSR() {
+  const chakraTheme = generateTheme('233');
+
+  return (
+    <ChakraProvider theme={chakraTheme}>
+      <Progress size="xs" isIndeterminate colorScheme="blue" />
+    </ChakraProvider>
+  );
+}
+
+const AppRoutesSSR = (host, sink) => {
   const props = {
     host,
     sink,
@@ -98,3 +98,5 @@ export const AppRoutesSSR = (host, sink) => {
     },
   ];
 };
+
+export default AppRoutesSSR;

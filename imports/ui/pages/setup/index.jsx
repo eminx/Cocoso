@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
-import React, { act, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { Box, Button, Center } from '@chakra-ui/react';
 
 import { Signup } from '../auth';
 import NewPlatform from './NewPlatform';
-import Stepper from '../../components/Stepper';
+import Stepper from '../../generic/Stepper';
 import { call } from '../../utils/shared';
-import { Alert, message } from '../../components/message';
+import { Alert, message } from '../../generic/message';
 import NewHost from './NewHost';
 
 const defaultSteps = [
@@ -104,7 +104,7 @@ export default function SetupHome({ children }) {
     };
 
     return (
-      <Box bg="gray.100" minH="100vh" pb="4">
+      <Box bg="gray.100" pb="4">
         <Center p="4">
           <Box>
             <Alert type="success">You have successfully finished the installation</Alert>
@@ -118,7 +118,7 @@ export default function SetupHome({ children }) {
   }
 
   return (
-    <Box bg="gray.100" minH="100vh" pb="4">
+    <Box bg="gray.100" pb="4">
       <Center>
         <Box w="xl">
           <Box p="4" mb="8">

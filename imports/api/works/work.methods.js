@@ -7,7 +7,7 @@ import Platform from '../platform/platform';
 Meteor.methods({
   getAllWorksFromAllHosts() {
     try {
-      return Works.find().fetch();
+      return Works.find({}, { sort: { creationDate: -1 } }).fetch();
     } catch (error) {
       throw new Meteor.Error(error, 'Could not retrieve data');
     }
@@ -19,11 +19,12 @@ Meteor.methods({
     }
 
     try {
-      const works = Works.find({
-        host,
-      }).fetch();
-
-      return works;
+      return Works.find(
+        {
+          host,
+        },
+        { sort: { creationDate: -1 } }
+      ).fetch();
     } catch (error) {
       console.log(error);
       throw new Meteor.Error(error, 'Could not retrieve data');

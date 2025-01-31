@@ -3,8 +3,8 @@ import { Button, Flex, Input, Stack } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import FormField from '../../components/FormField';
-import ChangeLanguage from '../../components/ChangeLanguageMenu';
+import FormField from '../../forms/FormField';
+import ChangeLanguage from '../../layout/ChangeLanguageMenu';
 
 function SettingsForm({ initialValues, onSubmit }) {
   const { handleSubmit, register, formState } = useForm({

@@ -2,8 +2,8 @@ import React, { useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, Center } from '@chakra-ui/react';
 
-import NewHostForm from '../../components/NewHostForm';
-import { message, Alert } from '../../components/message';
+import NewHostForm from '../../forms/NewHostForm';
+import { message, Alert } from '../../generic/message';
 import { call } from '../../utils/shared';
 
 function NewHost({ setFinished }) {

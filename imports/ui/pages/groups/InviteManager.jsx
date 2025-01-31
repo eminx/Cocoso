@@ -11,9 +11,9 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
-import FormField from '../../components/FormField';
+import FormField from '../../forms/FormField';
 import { emailIsValid, includesSpecialCharacters } from '../../utils/shared';
-import { message } from '../../components/message';
+import { message } from '../../generic/message';
 
 class InviteManager extends PureComponent {
   state = {

@@ -17,10 +17,10 @@ import {
 } from '@chakra-ui/react';
 
 import { StateContext } from '../../LayoutContainer';
-import NiceList from '../../components/NiceList';
-import Template from '../../components/Template';
-import Loader from '../../components/Loader';
-import { Alert } from '../../components/message';
+import NiceList from '../../generic/NiceList';
+import Template from '../../layout/Template';
+import Loader from '../../generic/Loader';
+import { Alert } from '../../generic/message';
 
 const focusStyle = {
   boxShadow: 'none',

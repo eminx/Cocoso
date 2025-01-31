@@ -3,12 +3,12 @@ import { Navigate } from 'react-router-dom';
 import { Box, Button, Center } from '@chakra-ui/react';
 
 import { call, resizeImage, uploadImage } from '../../utils/shared';
-import GroupForm from '../../components/GroupForm';
-import Template from '../../components/Template';
-import Loader from '../../components/Loader';
-import ConfirmModal from '../../components/ConfirmModal';
-import { message, Alert } from '../../components/message';
-import FormTitle from '../../components/FormTitle';
+import GroupForm from '../../generic/GroupForm';
+import Template from '../../layout/Template';
+import Loader from '../../generic/Loader';
+import ConfirmModal from '../../generic/ConfirmModal';
+import { message, Alert } from '../../generic/message';
+import FormTitle from '../../forms/FormTitle';
 
 class EditGroup extends PureComponent {
   state = {

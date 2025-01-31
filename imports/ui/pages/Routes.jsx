@@ -1,23 +1,20 @@
-import React, { lazy, Suspense } from 'react';
+import React, { lazy, Suspense, useContext } from 'react';
 import { Routes, Route } from 'react-router-dom';
-import { Progress } from '@chakra-ui/react';
 
-import Home from '../Home';
-import LayoutContainer from '../LayoutContainer';
-
-import Terms from '../components/Terms';
+import LayoutContainer, { StateContext } from '../LayoutContainer';
+import Terms from '../entry/Terms';
 
 const Communities = lazy(() => import('../pages/hosts/Communities'));
 
 // Activities
 const Activities = lazy(() => import('./activities/Activities'));
-const ActivityContainer = lazy(() => import('./activities/ActivityContainer'));
+const Activity = lazy(() => import('./activities/Activity'));
 const EditActivityContainer = lazy(() => import('./activities/EditActivityContainer'));
 const NewActivityContainer = lazy(() => import('./activities/NewActivityContainer'));
 
 // Groups
-const Groups = lazy(() => import('./groups/GroupList'));
-const Group = lazy(() => import('./groups/GroupContainer'));
+const Groups = lazy(() => import('./groups/Groups'));
+const Group = lazy(() => import('./groups/Group'));
 const EditGroupContainer = lazy(() => import('./groups/EditGroupContainer'));
 const NewGroupContainer = lazy(() => import('./groups/NewGroupContainer'));
 
@@ -28,14 +25,14 @@ const EditResource = lazy(() => import('./resources/EditResource'));
 const NewResource = lazy(() => import('./resources/NewResource'));
 
 // Calendar
-const CalendarContainer = lazy(() => import('./CalendarContainer'));
+const CalendarContainer = lazy(() => import('./calendar/CalendarContainer'));
 
 // Works
 const Works = lazy(() => import('./works/Works'));
 const NewWork = lazy(() => import('./works/NewWork'));
 
 // Profile
-const Profile = lazy(() => import('./profile/Profile'));
+const UserProfile = lazy(() => import('./profile/UserProfile'));
 const EditProfile = lazy(() => import('./profile/EditProfile'));
 const Work = lazy(() => import('./works/Work'));
 const EditWork = lazy(() => import('./works/EditWork'));
@@ -45,8 +42,8 @@ const EditPage = lazy(() => import('./pages/EditPage'));
 const Page = lazy(() => import('./pages/Page'));
 const NewPage = lazy(() => import('./pages/NewPage'));
 
-// Members
-const MembersPublic = lazy(() => import('./members/MembersPublic'));
+// Users
+const Users = lazy(() => import('./profile/Users'));
 
 // Admin
 const Settings = lazy(() => import('./admin/Settings'));
@@ -74,15 +71,50 @@ const NewHost = lazy(() => import('./hosts/NewHost'));
 const NotFoundPage = lazy(() => import('./NotFoundPage'));
 const MyActivities = lazy(() => import('./activities/MyActivities'));
 
-export default function () {
+function getComponentBasedOnFirstRoute(menuItems) {
+  const visibleMenu = menuItems.filter((item) => item.isVisible);
+  const firstRoute = visibleMenu && visibleMenu[0].name;
+
+  switch (firstRoute) {
+    case 'activities':
+      return <Activities />;
+    case 'groups':
+      return <Groups />;
+    case 'works':
+      return <Works />;
+    case 'resources':
+      return <Resources />;
+    case 'calendar':
+      return <CalendarContainer />;
+    case 'info':
+      return <Page />;
+    default:
+      return <Users />;
+  }
+}
+
+function HomePage() {
+  const { currentHost } = useContext(StateContext);
+  const menu = currentHost && currentHost.settings && currentHost.settings.menu;
+  if (!menu || !menu[0]) {
+    return null;
+  }
+
+  const Component = getComponentBasedOnFirstRoute(menu);
+
+  return Component;
+}
+
+export default function AppRoutes() {
   return (
     <LayoutContainer>
-      <Suspense fallback={<Progress size="sm" colorScheme="brand.500" />}>
+      {/* <Suspense fallback={<Progress size="sm" colorScheme="brand.500" />}> */}
+      <Suspense>
         <Routes>
-          <Route exact path="/" element={<Home />} />
+          <Route exact path="/" element={<HomePage />} />
 
           {/* Members list public */}
-          <Route path="/people" element={<MembersPublic />} />
+          <Route path="/people" element={<Users />} />
 
           {/* Calendar */}
           <Route exact path="/calendar" element={<CalendarContainer />} />
@@ -90,7 +122,7 @@ export default function () {
           {/* Activities */}
           <Route exact path="/activities" element={<Activities />} />
           <Route exact path="/activities/new" element={<NewActivityContainer />} />
-          <Route path="/activities/:activityId/*" element={<ActivityContainer />} />
+          <Route path="/activities/:activityId/*" element={<Activity />} />
           <Route exact path="/activities/:activityId/edit" element={<EditActivityContainer />} />
           <Route exact path="/my-activities" element={<MyActivities />} />
 
@@ -107,10 +139,11 @@ export default function () {
           <Route path="/resources/:resourceId/edit" element={<EditResource />} />
 
           {/* Pages */}
-          <Route exact path="/pages" element={<Page />} />
-          <Route exact path="/pages/new" element={<NewPage />} />
-          <Route path="/pages/:pageId/*" element={<Page />} />
-          <Route path="/pages/:pageId/edit" element={<EditPage />} />
+          <Route exact path="/info" element={<Page />} />
+          <Route exact path="/info/new" element={<NewPage />} />
+          <Route path="/info/:pageTitle/*" element={<Page />} />
+          <Route path="/pages/:pageTitle/*" element={<Page />} />
+          <Route path="/info/:pageTitle/edit" element={<EditPage />} />
 
           {/* Works */}
           <Route exact path="/works" element={<Works />} />
@@ -138,7 +171,7 @@ export default function () {
 
           {/* Profile & Profile Related Pages */}
           <Route path="/edit/*" element={<EditProfile />} />
-          <Route path="/:usernameSlug/*" element={<Profile />} />
+          <Route path="/:usernameSlug/*" element={<UserProfile />} />
           <Route path="/:usernameSlug/works/:workId/*" element={<Work />} />
           <Route path="/:usernameSlug/works/:workId/edit" element={<EditWork />} />
 

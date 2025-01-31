@@ -19,7 +19,7 @@ function SignupPage() {
   }
 
   return (
-    <Box pb="8" minHeight="100vh">
+    <Box pb="8">
       <Center>
         <Box w="sm">
           {platform && (
@@ -51,7 +51,7 @@ function SignupPage() {
             </Text>
           </Center>
 
-          <Box bg="gray.50" borderColor="gray.300" borderWidth={1} mb="4" p="6">
+          <Box bg="gray.100" borderColor="gray.300" borderWidth={1} mb="4" p="6">
             <Signup onSubmit={(values) => createAccount(values)} />
           </Box>
         </Box>

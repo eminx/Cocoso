@@ -3,7 +3,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Button, Flex, Input, Textarea, VStack } from '@chakra-ui/react';
 
-import FormField from '../../components/FormField';
+import FormField from '../../forms/FormField';
 import { platformFields } from '../../utils/constants/general';
 
 export default function NewPlatform({ onSubmit }) {

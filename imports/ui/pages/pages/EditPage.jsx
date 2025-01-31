@@ -4,14 +4,14 @@ import { Box, Button, Center, Flex } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import arrayMove from 'array-move';
 
-import PageForm from '../../components/PageForm';
+import PageForm from '../../generic/PageForm';
 import { call, parseTitle, resizeImage, uploadImage } from '../../utils/shared';
-import Loader from '../../components/Loader';
-import ConfirmModal from '../../components/ConfirmModal';
-import { message, Alert } from '../../components/message';
+import Loader from '../../generic/Loader';
+import ConfirmModal from '../../generic/ConfirmModal';
+import { message, Alert } from '../../generic/message';
 import { StateContext } from '../../LayoutContainer';
-import Template from '../../components/Template';
-import FormTitle from '../../components/FormTitle';
+import Template from '../../layout/Template';
+import FormTitle from '../../forms/FormTitle';
 
 function EditPage() {
   const { currentUser, role } = useContext(StateContext);

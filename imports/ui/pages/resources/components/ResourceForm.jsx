@@ -18,19 +18,19 @@ import {
   IconButton,
   WrapItem,
 } from '@chakra-ui/react';
-import { SmallCloseIcon } from '@chakra-ui/icons';
+import SmallCloseIcon from 'lucide-react/dist/esm/icons/x-circle';
 import { sortableContainer, sortableElement } from 'react-sortable-hoc';
 import arrayMove from 'array-move';
 import AutoCompleteSelect from 'react-select';
 import makeAnimated from 'react-select/animated';
 
 import { call, resizeImage, uploadImage } from '../../../utils/shared';
-import { message } from '../../../components/message';
-import FormField from '../../../components/FormField';
-import FileDropper from '../../../components/FileDropper';
-import NiceSlider from '../../../components/NiceSlider';
-import Loader from '../../../components/Loader';
-import ReactQuill from '../../../components/Quill';
+import { message } from '../../../generic/message';
+import FormField from '../../../forms/FormField';
+import FileDropper from '../../../forms/FileDropper';
+import NiceSlider from '../../../generic/NiceSlider';
+import Loader from '../../../generic/Loader';
+import ReactQuill from '../../../forms/Quill';
 import DocumentsField from './DocumentsField';
 
 const animatedComponents = makeAnimated();

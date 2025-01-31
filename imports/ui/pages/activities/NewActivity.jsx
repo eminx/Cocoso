@@ -6,10 +6,10 @@ import { Box, VStack } from '@chakra-ui/react';
 import { parse } from 'query-string';
 import arrayMove from 'array-move';
 
-import ActivityForm from '../../components/ActivityForm';
-import Template from '../../components/Template';
-import { message, Alert } from '../../components/message';
-import FormSwitch from '../../components/FormSwitch';
+import ActivityForm from '../../forms/ActivityForm';
+import Template from '../../layout/Template';
+import { message, Alert } from '../../generic/message';
+import FormSwitch from '../../forms/FormSwitch';
 import {
   call,
   compareDatesWithStartDateForSort,
@@ -19,7 +19,7 @@ import {
   uploadImage,
 } from '../../utils/shared';
 import { StateContext } from '../../LayoutContainer';
-import FormTitle from '../../components/FormTitle';
+import FormTitle from '../../forms/FormTitle';
 
 const defaultCapacity = 40;
 const today = new Date().toISOString().substring(0, 10);

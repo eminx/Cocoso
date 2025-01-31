@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, Button, Center, Heading, IconButton, Text, VStack } from '@chakra-ui/react';
-import { PlusSquareIcon } from '@chakra-ui/icons';
+import PlusSquareIcon from 'lucide-react/dist/esm/icons/plus-square';
 import parseHtml from 'html-react-parser';
 
 import { StateContext } from '../../LayoutContainer';
-import Loader from '../../components/Loader';
-import { message, Alert } from '../../components/message';
+import Loader from '../../generic/Loader';
+import { message, Alert } from '../../generic/message';
 import { call } from '../../utils/shared';
-import ReactQuill from '../../components/Quill';
-import Template from '../../components/Template';
+import ReactQuill from '../../forms/Quill';
+import Template from '../../layout/Template';
 import { AdminMenu } from './Settings';
 
 export default function PlatformRegistrationIntro({ history }) {

@@ -41,7 +41,7 @@ Users.schema.UserProfile = {
   groups: { type: Array, defaultValue: [] },
   'groups.$': {
     type: new SimpleSchema({
-      groupId: Schemas.Id,
+      groupId: { type: String },
       name: { type: String },
       isAdmin: { type: Boolean, defaultValue: false },
       joinDate: { type: Date },

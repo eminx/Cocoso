@@ -1,5 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;700&display=swap');
+/* @import 'react-slideshow-image/dist/styles.css';
+@import 'react-lazy-load-image-component/src/effects/black-and-white.css'; */
+
+*,
+*:hover {
+  box-sizing: border-box;
+}
 
 body {
   min-height: 101vh;
@@ -147,9 +154,9 @@ input::placeholder {
 /* Sexy Thumb */
 
 .thumb-cover-container {
-  height: 315px;
   position: relative;
   width: 100%;
+  cursor: pointer;
 }
 
 .thumb-cover-container:hover .thumb-cover {
@@ -169,7 +176,7 @@ input::placeholder {
 .thumb-text-container {
   font-family: Raleway, sans-serif;
   height: 100%;
-  padding: 24px 16px;
+  padding: 24px;
   position: absolute;
   z-index: 1;
   top: 0;
@@ -178,12 +185,6 @@ input::placeholder {
 
 .lazy-load-image-background {
   width: 100%;
-}
-
-.sexy-thumb-container {
-  cursor: pointer;
-  flex: 1 1 355px;
-  max-width: 550px;
 }
 
 .cover-highlight-title {
@@ -207,26 +208,27 @@ input::placeholder {
   font-weight: normal;
 }
 
-.chakra-input,
+/* .chakra-input,
 .chakra-select,
 .chakra-numberinput__field,
 .chakra-checkbox__control:not([data-checked]),
 .chakra-textarea {
   background-color: #fff !important;
-}
+} */
 
-.chakra-input:hover,
+/* .chakra-input:hover,
 .chakra-select:hover,
 .chakra-numberinput__field:hover,
 .chakra-textarea:hover {
   background-color: #f7f7f7 !important;
-}
+} */
 
 .my-masonry-grid {
   display: -webkit-box; /* Not needed if autoprefixing */
   display: -ms-flexbox; /* Not needed if autoprefixing */
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   width: auto;
 }
 .my-masonry-grid_column {

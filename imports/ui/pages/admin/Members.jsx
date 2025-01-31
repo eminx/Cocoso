@@ -4,14 +4,14 @@ import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import { Box, Flex, Heading, Input, Select, Text } from '@chakra-ui/react';
 
-import Loader from '../../components/Loader';
-import NiceList from '../../components/NiceList';
-import Template from '../../components/Template';
-import { message, Alert } from '../../components/message';
+import Loader from '../../generic/Loader';
+import NiceList from '../../generic/NiceList';
+import Template from '../../layout/Template';
+import { message, Alert } from '../../generic/message';
 import { StateContext } from '../../LayoutContainer';
 import { call } from '../../utils/shared';
-import UsageReport from '../../components/UsageReport';
-import Tabs from '../../components/Tabs';
+import UsageReport from '../../admin/UsageReport';
+import Tabs from '../../entry/Tabs';
 import { AdminMenu } from './Settings';
 
 const compareUsersByDate = (a, b) => {
